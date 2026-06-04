@@ -1,14 +1,81 @@
 # EpidForecasting MCP Server
 
-A FastMCP server for weekly influenza forecasting in Saint Petersburg using the static dataset bundled with the server. It follows the CoScientist MCP server pattern: isolated server directory, tools declared with `@mcp.tool()`, and an HTTP `/mcp` endpoint.
+A compact FastMCP server for weekly influenza forecasting in Saint Petersburg. The server is designed for CoScientist as an agent-facing analytical capability: the model requests an epidemiological forecasting run rather than coordinating internal model-training stages.
 
-## Capabilities
+## Integration pattern
 
-- Builds a supervised weekly forecasting table for horizons `h = 1..4`.
-- Trains one `HistGradientBoostingRegressor` model per forecast horizon using `loss="poisson"`.
-- Computes split-conformal prediction intervals with nominal 80% coverage by default.
-- Generates forecasts from the latest feature-ready dataset week or an explicitly supplied historical origin date.
-- Publishes exported CSV/JSON results to S3-compatible object storage for cross-service consumption.
+This implementation follows the existing CoScientist MCP-server conventions:
+
+- the public MCP surface is small, with one descriptive tool and one computational tool;
+- computational artifacts are written to S3-compatible storage under a `user_id/session_id/...` prefix;
+- the MCP response includes the compact numerical result inline for immediate agent use;
+- downloadable result files are exposed through temporary presigned URLs generated server-side, so the client never receives permanent S3 credentials.
+
+## Public MCP tools
+
+### `describe_influenza_dataset()`
+
+Returns a compact dataset description: target variable, row count, date range, four-week horizon, and missing-value status.
+
+Parameters: none.
+
+### `run_influenza_forecasting(session_id, user_id, origin_date=None)`
+
+Runs the complete fixed four-week workflow:
+
+1. build a supervised weekly feature table for horizons `h = 1..4`;
+2. fit direct multi-step `HistGradientBoostingRegressor` models;
+3. calculate split-conformal intervals for untouched holdout evaluation;
+4. refit point-forecast models on all labelled feature-complete observations;
+5. return holdout metrics and the four-week forecast inline;
+6. upload output artifacts to S3-compatible storage and return temporary download links.
+
+Parameters:
+
+- `session_id` — session identifier used in the artifact prefix;
+- `user_id` — user identifier used in the artifact prefix;
+- `origin_date` — optional observed dataset week in `YYYY-MM-DD` format; omitted by default to use the latest feature-complete observation.
+
+Model-tuning parameters, split sizes, interval settings, output paths, and storage credentials are not exposed through MCP. They are controlled by the server configuration.
+
+## Output contract
+
+The agent receives forecast values and validation metrics inline. Full result files are saved under:
+
+```text
+user_id/session_id/epid_forecasting/<run_id>/forecast.csv
+user_id/session_id/epid_forecasting/<run_id>/metrics.json
+user_id/session_id/epid_forecasting/<run_id>/run_summary.json
+```
+
+The response metadata contains an S3 URI and a temporary presigned download URL for each artifact:
+
+```json
+{
+  "result_delivery": {
+    "mode": "inline_summary_plus_s3_artifacts",
+    "storage": "s3_compatible",
+    "authentication": "server_side_s3_credentials",
+    "client_download_access": "temporary_presigned_urls"
+  },
+  "run_id": "<uuid>",
+  "storage_prefix": "<user_id>/<session_id>/epid_forecasting/<run_id>",
+  "download_access": "presigned_urls",
+  "presigned_url_expiration_seconds": 3600,
+  "artifacts": {
+    "forecast": {
+      "s3_uri": "s3://<bucket>/<prefix>/forecast.csv",
+      "download_url": "<temporary-url>"
+    }
+  }
+}
+```
+
+S3 access keys are read only by the server. They are not passed to the LLM client.
+
+## Analytical interpretation of intervals
+
+Nominal split-conformal coverage applies to the untouched holdout evaluation. The point forecast for future weeks is produced after refitting on all labelled feature-complete observations. Therefore, its accompanying bounds are labelled `calibration-derived uncertainty bounds`; the server does not claim a new nominal coverage guarantee for the refitted production model.
 
 ## Project layout
 
@@ -24,176 +91,64 @@ mcp-servers/epid-forecasting-mcp-server/
 │   ├── service.py
 │   └── storage.py
 ├── tests/
-│   └── test_core.py
+│   ├── test_core.py
+│   └── test_storage.py
 ├── .env.example
-├── .gitignore
 ├── Dockerfile
 ├── README.md
 ├── epid_forecasting_server.py
 └── pyproject.toml
 ```
 
-## Output contract
-
-Every tool returns a JSON object with a short summary and structured metadata:
-
-```json
-{
-  "answer": "Human-readable summary.",
-  "metadata": {}
-}
-```
-
-Small structured results are returned inline in `metadata`. Materialized export files are uploaded to S3-compatible storage and returned as `s3://...` URIs.
-
-## MCP tools
-
-### `describe_dataset()`
-
-Returns dataset columns, row count, date range, target variable, missing values, and numeric summary inline in JSON.
-
-### `get_feature_schema()`
-
-Returns the engineered feature list, groups, dtypes, and missing counts after the valid-row filter inline in JSON.
-
-### `train_forecast_models(test_weeks=52, calib_weeks=52, alpha=0.20, target_transform="none", persist_artifacts=True)`
-
-Trains direct multi-step GBDT models and conformal intervals. The optional persisted model bundle is internal local server state; exported user-facing result files are handled by `export_forecast_results`.
-
-### `forecast_next_4_weeks(origin_date=None)`
-
-Returns a four-row inline forecast with:
-
-- `origin_date`
-- `target_date`
-- `horizon_weeks`
-- `inc_per_10k_pred`
-- `pi80_lower`
-- `pi80_upper`
-- `pi80_width`
-
-When `origin_date` is omitted, the latest dataset week with complete engineered features is used. When provided, it must exactly match an available feature-ready dataset week.
-
-### `backtest_forecast_models()`
-
-Returns point and interval metrics for train-only and train-plus-calibration refit models inline in JSON.
-
-### `get_model_registry()`
-
-Returns a machine-readable registry of the four trained direct horizon models inline in JSON.
-
-### `export_forecast_results(user_id, session_id, origin_date=None, history_tail_n=40)`
-
-Requires S3 configuration. It creates and uploads:
-
-- `metrics_summary.csv`
-- `test_predictions.csv`
-- `forecast_next_4w.csv`
-- `feature_list.csv`
-- `history_plus_forecast_40.csv`
-- `model_registry.json`
-
-The object key convention is:
-
-```text
-<user_id>/<session_id>/epid_forecasting/<run_id>/<file_name>
-```
-
-Example output metadata:
-
-```json
-{
-  "storage": "s3",
-  "run_id": "<uuid>",
-  "forecast_origin_date": "2026-04-27",
-  "artifacts": {
-    "forecast": "s3://<bucket>/<user_id>/<session_id>/epid_forecasting/<run_id>/forecast_next_4w.csv",
-    "metrics": "s3://<bucket>/<user_id>/<session_id>/epid_forecasting/<run_id>/metrics_summary.csv"
-  }
-}
-```
-
-`export_forecast_results` raises a configuration error when S3 variables are not provided; it does not silently substitute container-local output paths.
-
 ## Environment variables
 
-Copy the example file only for local execution; never commit populated credentials:
+Create `.env` from `.env.example` and provide S3-compatible storage settings:
 
 ```bash
-cp .env.example .env
-```
-
-```env
 EPID_DATA_PATH=/app/data/influenza_weather_spb_dataset.csv
-EPID_ARTIFACT_DIR=/app/artifacts
-
-# Required only for export_forecast_results(...)
-S3_ENDPOINT_URL=
-S3_BUCKET_NAME=
-S3_ACCESS_KEY=
-S3_SECRET_KEY=
+ENDPOINT_URL=http://localhost:9000
+ACCESS_KEY=your-access-key
+SECRET_KEY=your-secret-key
+BUCKET_NAME=your-bucket-name
+PRESIGNED_URL_EXPIRATION_SECONDS=3600
 ```
 
-The inspection, training, forecast, backtest, and registry tools do not require S3 credentials. Only file export requires them.
+`ENDPOINT_URL`, `ACCESS_KEY`, `SECRET_KEY`, and `BUCKET_NAME` follow the names used by `dataset-collection-mcp-server`. The server also accepts `S3_ENDPOINT_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and `S3_BUCKET_NAME` as aliases for compatibility with the chemical MCP-server style.
 
-## Local run
+## Run with uv
 
 ```bash
 cd mcp-servers/epid-forecasting-mcp-server
 cp .env.example .env
-uv sync
+# Edit .env with actual object-storage credentials.
+set -a && source .env && set +a
+uv sync --frozen
 uv run python epid_forecasting_server.py
 ```
 
-The HTTP MCP endpoint is:
+The MCP endpoint is:
 
 ```text
 http://localhost:7331/mcp
 ```
 
-## Docker run
+## Run with Docker Compose
 
-From the CoScientist repository root:
+When added as the next service in the repository-level MCP compose file, the external endpoint may use port `7335`, after the existing services on ports `7331` to `7334`:
 
 ```bash
-docker build \
-  -f mcp-servers/epid-forecasting-mcp-server/Dockerfile \
-  -t epid-forecasting-mcp-server .
-
-docker run --rm --env-file mcp-servers/epid-forecasting-mcp-server/.env \
-  -p 7334:7331 epid-forecasting-mcp-server
+docker compose -f mcp-servers/docker-compose.epid-forecasting.yml up --build
 ```
 
-The externally exposed endpoint is:
+External endpoint:
 
 ```text
-http://localhost:7334/mcp
-```
-
-## Docker Compose snippet
-
-Add this service to `mcp-servers/docker-compose.yml`:
-
-```yaml
-epid-forecasting-mcp-server:
-  build:
-    context: ..
-    dockerfile: mcp-servers/epid-forecasting-mcp-server/Dockerfile
-  container_name: epid-forecasting-mcp-server
-  env_file:
-    - ./epid-forecasting-mcp-server/.env
-  environment:
-    PYTHONUNBUFFERED: "1"
-  ports:
-    - "7334:7331"
-  volumes:
-    - ./epid-forecasting-mcp-server/artifacts:/app/artifacts
-  restart: unless-stopped
+http://localhost:7335/mcp
 ```
 
 ## Test
 
 ```bash
 cd mcp-servers/epid-forecasting-mcp-server
-uv run pytest
+uv run --frozen pytest
 ```

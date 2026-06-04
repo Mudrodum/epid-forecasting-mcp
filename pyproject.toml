@@ -1,7 +1,7 @@
 [project]
 name = "epid-forecasting-mcp-server"
-version = "0.1.0"
-description = "FastMCP server for static weekly influenza forecasting with conformal intervals"
+version = "0.3.0"
+description = "Compact FastMCP server for fixed weekly influenza forecasting with conformal intervals"
 authors = [
   { name = "CoScientist" }
 ]
@@ -12,9 +12,8 @@ dependencies = [
   "numpy>=1.26,<3.0",
   "pandas>=2.2,<3.0",
   "scikit-learn>=1.4,<2.0",
-  "joblib>=1.4,<2.0",
   "python-dotenv>=1.0,<2.0",
-  "boto3>=1.42.68,<2.0"
+  "boto3>=1.34,<2.0"
 ]
 
 [dependency-groups]

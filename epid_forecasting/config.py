@@ -7,7 +7,6 @@ from pathlib import Path
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_PATH = PACKAGE_ROOT / "data" / "influenza_weather_spb_dataset.csv"
-DEFAULT_ARTIFACT_DIR = PACKAGE_ROOT / "artifacts"
 
 
 @dataclass(frozen=True)

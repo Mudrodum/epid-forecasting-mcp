@@ -1,16 +1,13 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir uv
+COPY mcp-servers/epid-forecasting-mcp-server /app
 
-COPY mcp-servers/epid-forecasting-mcp-server/ ./
-RUN uv sync --no-dev
+RUN pip install --no-cache-dir uv \
+    && uv sync --frozen --no-dev
 
-ENV PYTHONUNBUFFERED=1
 ENV EPID_DATA_PATH=/app/data/influenza_weather_spb_dataset.csv
-ENV EPID_ARTIFACT_DIR=/app/artifacts
-
 EXPOSE 7331
 
 CMD ["uv", "run", "python", "epid_forecasting_server.py"]
