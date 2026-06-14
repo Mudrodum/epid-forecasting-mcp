@@ -7,10 +7,15 @@ from pathlib import Path
 from typing import Any
 
 from fastmcp import FastMCP
+from dotenv import find_dotenv, load_dotenv
 
 from epid_forecasting.config import DEFAULT_DATA_PATH
 from epid_forecasting.service import EpidForecastingService
 from epid_forecasting.storage import S3ForecastArtifactStore, S3StorageSettings
+
+PROJECT_ENV_PATH = Path(__file__).resolve().parent / ".env"
+load_dotenv(PROJECT_ENV_PATH, override=False)
+load_dotenv(find_dotenv(usecwd=True), override=False)
 
 DATA_PATH = Path(os.getenv("EPID_DATA_PATH", str(DEFAULT_DATA_PATH)))
 
