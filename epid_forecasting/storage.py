@@ -112,6 +112,23 @@ class S3ForecastArtifactStore:
             ExpiresIn=self.settings.presigned_expiration_seconds,
         )
 
+    def _upload_artifacts(self, prefix: str, artifacts: dict[str, dict[str, Any]]) -> dict[str, Any]:
+        for artifact in artifacts.values():
+            self._put_bytes(artifact["key"], artifact["bytes"], artifact["content_type"])
+        return {
+            "storage_prefix": prefix,
+            "download_access": "presigned_urls",
+            "presigned_url_expiration_seconds": self.settings.presigned_expiration_seconds,
+            "artifacts": {
+                name: {
+                    "s3_uri": f"s3://{self.settings.bucket_name}/{artifact['key']}",
+                    "download_url": self._presigned_url(artifact["key"]),
+                    "content_type": artifact["content_type"],
+                }
+                for name, artifact in artifacts.items()
+            },
+        }
+
     def save_forecasting_run(
         self,
         *,
@@ -187,3 +204,339 @@ class S3ForecastArtifactStore:
                 },
             },
         }
+
+    def save_influenza_db_dataset(
+        self,
+        *,
+        weekly: pd.DataFrame,
+        cases: pd.DataFrame,
+        age_groups: pd.DataFrame,
+        summary: dict[str, Any],
+        user_id: str,
+        session_id: str,
+        run_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Upload normalized influenza DB tables under a session-scoped S3 prefix."""
+        user_id = self._validate_identifier(user_id, "user_id")
+        session_id = self._validate_identifier(session_id, "session_id")
+        run_id = run_id or str(uuid.uuid4())
+        self._validate_identifier(run_id, "run_id")
+        prefix = f"{user_id}/{session_id}/epid_forecasting/influenza_db/{run_id}"
+
+        artifacts = {
+            "weekly": {
+                "key": f"{prefix}/weekly.csv",
+                "bytes": weekly.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "cases": {
+                "key": f"{prefix}/cases.csv",
+                "bytes": cases.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "age_groups": {
+                "key": f"{prefix}/age_groups.csv",
+                "bytes": age_groups.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "summary": {
+                "key": f"{prefix}/summary.json",
+                "bytes": json.dumps(summary, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            },
+        }
+
+        for artifact in artifacts.values():
+            self._put_bytes(artifact["key"], artifact["bytes"], artifact["content_type"])
+
+        return {
+            "run_id": run_id,
+            "storage_prefix": prefix,
+            "download_access": "presigned_urls",
+            "presigned_url_expiration_seconds": self.settings.presigned_expiration_seconds,
+            "artifacts": {
+                name: {
+                    "s3_uri": f"s3://{self.settings.bucket_name}/{artifact['key']}",
+                    "download_url": self._presigned_url(artifact["key"]),
+                    "content_type": artifact["content_type"],
+                }
+                for name, artifact in artifacts.items()
+            },
+        }
+
+    def save_weather_dataset(
+        self,
+        *,
+        hourly: pd.DataFrame,
+        weekly: pd.DataFrame,
+        location: dict[str, Any],
+        summary: dict[str, Any],
+        user_id: str,
+        session_id: str,
+        run_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Upload Open-Meteo hourly/weekly weather artifacts."""
+        user_id = self._validate_identifier(user_id, "user_id")
+        session_id = self._validate_identifier(session_id, "session_id")
+        run_id = run_id or str(uuid.uuid4())
+        self._validate_identifier(run_id, "run_id")
+        prefix = f"{user_id}/{session_id}/epid_forecasting/weather/{run_id}"
+        artifacts = {
+            "weather_hourly": {
+                "key": f"{prefix}/weather_hourly.csv",
+                "bytes": hourly.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "weather_weekly": {
+                "key": f"{prefix}/weather_weekly.csv",
+                "bytes": weekly.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "weather_location": {
+                "key": f"{prefix}/weather_location.json",
+                "bytes": json.dumps(location, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            },
+            "weather_summary": {
+                "key": f"{prefix}/weather_summary.json",
+                "bytes": json.dumps(summary, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            },
+        }
+        metadata = self._upload_artifacts(prefix, artifacts)
+        return {"run_id": run_id, **metadata}
+
+    def save_shap_explainability(
+        self,
+        *,
+        global_importance: pd.DataFrame,
+        local_values: pd.DataFrame,
+        worst_cases: pd.DataFrame,
+        summary: dict[str, Any],
+        user_id: str,
+        session_id: str,
+        run_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Upload SHAP explainability tables and summary."""
+        user_id = self._validate_identifier(user_id, "user_id")
+        session_id = self._validate_identifier(session_id, "session_id")
+        run_id = run_id or str(uuid.uuid4())
+        self._validate_identifier(run_id, "run_id")
+        prefix = f"{user_id}/{session_id}/epid_forecasting/shap/{run_id}"
+        artifacts = {
+            "shap_global_importance": {
+                "key": f"{prefix}/shap_global_importance.csv",
+                "bytes": global_importance.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "shap_local_values": {
+                "key": f"{prefix}/shap_local_values.csv",
+                "bytes": local_values.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "shap_worst_cases": {
+                "key": f"{prefix}/shap_worst_cases.csv",
+                "bytes": worst_cases.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "shap_summary": {
+                "key": f"{prefix}/shap_summary.json",
+                "bytes": json.dumps(summary, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            },
+        }
+        metadata = self._upload_artifacts(prefix, artifacts)
+        return {"run_id": run_id, **metadata}
+
+    def save_br_calibration_run(
+        self,
+        *,
+        kind: str,
+        trajectory: pd.DataFrame,
+        parameter_samples: pd.DataFrame,
+        parameter_summary: dict[str, Any],
+        diagnostics: dict[str, Any],
+        configuration: dict[str, Any],
+        limitations: list[str],
+        figures: dict[str, dict[str, bytes]],
+        user_id: str,
+        session_id: str,
+        run_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Upload mechanistic BR-calibration tables, summaries, and figures."""
+
+        user_id = self._validate_identifier(user_id, "user_id")
+        session_id = self._validate_identifier(session_id, "session_id")
+        kind = self._validate_identifier(kind, "kind")
+        run_id = run_id or str(uuid.uuid4())
+        self._validate_identifier(run_id, "run_id")
+        prefix = f"{user_id}/{session_id}/epid_forecasting/br_calibration/{kind}/{run_id}"
+
+        summary_payload = {
+            "configuration": configuration,
+            "parameter_summary": parameter_summary,
+            "diagnostics": diagnostics,
+            "limitations": limitations,
+        }
+        artifacts: dict[str, dict[str, Any]] = {
+            "trajectory": {
+                "key": f"{prefix}/trajectory.csv",
+                "bytes": trajectory.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "parameter_samples": {
+                "key": f"{prefix}/parameter_samples.csv",
+                "bytes": parameter_samples.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "run_summary": {
+                "key": f"{prefix}/run_summary.json",
+                "bytes": json.dumps(summary_payload, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            },
+        }
+        for figure_name, formats in figures.items():
+            for extension, payload in formats.items():
+                if extension not in {"png", "pdf"}:
+                    raise ValueError(f"Unsupported BR figure extension: {extension}.")
+                artifacts[f"{figure_name}_{extension}"] = {
+                    "key": f"{prefix}/{figure_name}.{extension}",
+                    "bytes": payload,
+                    "content_type": "image/png" if extension == "png" else "application/pdf",
+                }
+
+        metadata = self._upload_artifacts(prefix, artifacts)
+        return {"run_id": run_id, **metadata}
+
+    def save_bulletin_context(
+        self,
+        *,
+        context: dict[str, Any],
+        markdown: str,
+        weekly: pd.DataFrame,
+        age_groups: pd.DataFrame,
+        user_id: str,
+        session_id: str,
+        run_id: str | None = None,
+        weather_hourly: pd.DataFrame | None = None,
+        weather_weekly: pd.DataFrame | None = None,
+        merged_weekly: pd.DataFrame | None = None,
+        shap_global_importance: pd.DataFrame | None = None,
+        shap_local_values: pd.DataFrame | None = None,
+        shap_worst_cases: pd.DataFrame | None = None,
+        br_trajectory: pd.DataFrame | None = None,
+        br_parameter_samples: pd.DataFrame | None = None,
+        br_summary: dict[str, Any] | None = None,
+        br_figures: dict[str, dict[str, bytes]] | None = None,
+    ) -> dict[str, Any]:
+        """Upload a structured bulletin evidence packet and supporting tables."""
+        user_id = self._validate_identifier(user_id, "user_id")
+        session_id = self._validate_identifier(session_id, "session_id")
+        run_id = run_id or str(uuid.uuid4())
+        self._validate_identifier(run_id, "run_id")
+        prefix = f"{user_id}/{session_id}/epid_forecasting/bulletin_context/{run_id}"
+
+        artifacts = {
+            "bulletin_context_json": {
+                "key": f"{prefix}/bulletin_context.json",
+                "bytes": json.dumps(context, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            },
+            "bulletin_context_markdown": {
+                "key": f"{prefix}/bulletin_context.md",
+                "bytes": markdown.encode("utf-8"),
+                "content_type": "text/markdown",
+            },
+            "weekly": {
+                "key": f"{prefix}/weekly.csv",
+                "bytes": weekly.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+            "age_groups": {
+                "key": f"{prefix}/age_groups.csv",
+                "bytes": age_groups.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            },
+        }
+        if weather_hourly is not None:
+            artifacts["weather_hourly"] = {
+                "key": f"{prefix}/weather_hourly.csv",
+                "bytes": weather_hourly.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if weather_weekly is not None:
+            artifacts["weather_weekly"] = {
+                "key": f"{prefix}/weather_weekly.csv",
+                "bytes": weather_weekly.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if merged_weekly is not None:
+            artifacts["merged_weekly"] = {
+                "key": f"{prefix}/merged_weekly.csv",
+                "bytes": merged_weekly.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if shap_global_importance is not None:
+            artifacts["shap_global_importance"] = {
+                "key": f"{prefix}/shap_global_importance.csv",
+                "bytes": shap_global_importance.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if shap_local_values is not None:
+            artifacts["shap_local_values"] = {
+                "key": f"{prefix}/shap_local_values.csv",
+                "bytes": shap_local_values.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if shap_worst_cases is not None:
+            artifacts["shap_worst_cases"] = {
+                "key": f"{prefix}/shap_worst_cases.csv",
+                "bytes": shap_worst_cases.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if br_trajectory is not None:
+            artifacts["br_trajectory"] = {
+                "key": f"{prefix}/br_trajectory.csv",
+                "bytes": br_trajectory.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if br_parameter_samples is not None:
+            artifacts["br_parameter_samples"] = {
+                "key": f"{prefix}/br_parameter_samples.csv",
+                "bytes": br_parameter_samples.to_csv(index=False).encode("utf-8"),
+                "content_type": "text/csv",
+            }
+        if br_summary is not None:
+            artifacts["br_summary"] = {
+                "key": f"{prefix}/br_summary.json",
+                "bytes": json.dumps(br_summary, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            }
+        for figure_name, formats in (br_figures or {}).items():
+            for extension, payload in formats.items():
+                if extension not in {"png", "pdf"}:
+                    raise ValueError(f"Unsupported bulletin BR figure extension: {extension}.")
+                artifacts[f"{figure_name}_{extension}"] = {
+                    "key": f"{prefix}/{figure_name}.{extension}",
+                    "bytes": payload,
+                    "content_type": "image/png" if extension == "png" else "application/pdf",
+                }
+
+        for artifact in artifacts.values():
+            self._put_bytes(artifact["key"], artifact["bytes"], artifact["content_type"])
+
+        return {
+            "run_id": run_id,
+            "storage_prefix": prefix,
+            "download_access": "presigned_urls",
+            "presigned_url_expiration_seconds": self.settings.presigned_expiration_seconds,
+            "artifacts": {
+                name: {
+                    "s3_uri": f"s3://{self.settings.bucket_name}/{artifact['key']}",
+                    "download_url": self._presigned_url(artifact["key"]),
+                    "content_type": artifact["content_type"],
+                }
+                for name, artifact in artifacts.items()
+            },
+        }
+

@@ -12,6 +12,7 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 
 from .config import DEFAULT_DATA_PATH, ForecastConfig
 from .features import build_supervised
+from .seasonal_analysis import compare_recent_epidemic_waves
 from .modeling import (
     conformal_radius_from_abs_errors,
     evaluate_intervals,
@@ -93,15 +94,30 @@ class EpidForecastingService:
         self.state: TrainingState | None = None
         self._raw_data: pd.DataFrame | None = None
 
+    @staticmethod
+    def _validate_data_frame(frame: pd.DataFrame, *, source_name: str = "dataset") -> pd.DataFrame:
+        missing = sorted(REQUIRED_COLUMNS - set(frame.columns))
+        if missing:
+            raise ValueError(f"{source_name} is missing required columns: {missing}")
+        df = frame.copy()
+        df["datetime"] = pd.to_datetime(df["datetime"], errors="coerce")
+        if df["datetime"].isna().any():
+            raise ValueError(f"{source_name} contains invalid datetime values.")
+        for column in sorted(REQUIRED_COLUMNS - {"datetime"}):
+            df[column] = pd.to_numeric(df[column], errors="coerce")
+        required_without_optional_humidity_extremes = sorted(REQUIRED_COLUMNS - {"rh_min", "rh_max"})
+        if df[required_without_optional_humidity_extremes].isna().any().any():
+            bad_columns = [
+                col for col in required_without_optional_humidity_extremes if df[col].isna().any()
+            ]
+            raise ValueError(f"{source_name} contains NaN values in required columns: {bad_columns}")
+        return df.sort_values("datetime").reset_index(drop=True)
+
     def load_data(self) -> pd.DataFrame:
         if not self.data_path.exists():
             raise FileNotFoundError(f"Dataset not found: {self.data_path}")
         df = pd.read_csv(self.data_path)
-        missing = sorted(REQUIRED_COLUMNS - set(df.columns))
-        if missing:
-            raise ValueError(f"Dataset is missing required columns: {missing}")
-        df["datetime"] = pd.to_datetime(df["datetime"])
-        df = df.sort_values("datetime").reset_index(drop=True)
+        df = self._validate_data_frame(df, source_name="dataset")
         self._raw_data = df.copy()
         return df
 
@@ -120,9 +136,9 @@ class EpidForecastingService:
         )
 
     def _prepare_supervised(
-        self, config: ForecastConfig
+        self, config: ForecastConfig, data: pd.DataFrame | None = None
     ) -> tuple[pd.DataFrame, pd.DataFrame, list[str], np.ndarray, np.ndarray, np.ndarray]:
-        df = self.load_data()
+        df = self.load_data() if data is None else self._validate_data_frame(data, source_name="provided weekly data")
         supervised, feature_cols = build_supervised(
             df,
             target_col=config.target_col,
@@ -159,10 +175,11 @@ class EpidForecastingService:
         test_mask[calib_end:] = True
         return supervised, data_valid, feature_cols, train_mask, calib_mask, test_mask
 
-    def _fit_fixed_workflow(self) -> TrainingState:
+    def _fit_fixed_workflow(self, data: pd.DataFrame | None = None) -> TrainingState:
         """Fit the pre-configured model once and calibrate its prediction intervals."""
         config = ForecastConfig()
-        supervised, data_valid, feature_cols, train_mask, calib_mask, test_mask = self._prepare_supervised(config)
+        validated_data = self.load_data() if data is None else self._validate_data_frame(data, source_name="provided weekly data")
+        supervised, data_valid, feature_cols, train_mask, calib_mask, test_mask = self._prepare_supervised(config, data=validated_data)
 
         x = data_valid[feature_cols].to_numpy(dtype=float)
         x_train = x[train_mask]
@@ -208,7 +225,7 @@ class EpidForecastingService:
 
         state = TrainingState(
             config=config,
-            data=self._raw_data.copy() if self._raw_data is not None else self.load_data(),
+            data=validated_data.copy(),
             supervised_data=supervised,
             data_valid=data_valid,
             feature_cols=feature_cols,
@@ -223,11 +240,16 @@ class EpidForecastingService:
             per_h_interval_metrics=interval_per_h,
             overall_interval_metrics=interval_overall,
         )
-        self.state = state
+        if data is None:
+            self.state = state
         return state
 
     def _ensure_state(self) -> TrainingState:
         return self.state if self.state is not None else self._fit_fixed_workflow()
+
+    def fit_forecasting_state_for_frame(self, frame: pd.DataFrame) -> TrainingState:
+        """Fit the fixed workflow on an externally supplied merged weekly table."""
+        return self._fit_fixed_workflow(data=frame)
 
     @staticmethod
     def _split_summary(state: TrainingState) -> dict[str, Any]:
@@ -286,9 +308,8 @@ class EpidForecastingService:
         )
         return _jsonable({"origin_date": resolved_origin.date().isoformat(), "forecast": forecast})
 
-    def run_influenza_forecasting(self, *, origin_date: str | None = None) -> dict[str, Any]:
-        """Execute the fixed public forecasting workflow and return compact inline results."""
-        state = self._ensure_state()
+    def _forecast_result_from_state(self, state: TrainingState, *, origin_date: str | None = None) -> dict[str, Any]:
+        """Build compact inline forecast results from an already fitted state."""
         forecast = self._forecast_next_4_weeks(state, origin_date)
         config = asdict(state.config)
         return _jsonable(
@@ -332,3 +353,31 @@ class EpidForecastingService:
                 },
             }
         )
+
+    def run_influenza_forecasting(self, *, origin_date: str | None = None) -> dict[str, Any]:
+        """Execute the fixed public forecasting workflow and return compact inline results."""
+        return self._forecast_result_from_state(self._ensure_state(), origin_date=origin_date)
+
+    def run_influenza_forecasting_for_frame(
+        self, frame: pd.DataFrame, *, origin_date: str | None = None
+    ) -> tuple[dict[str, Any], TrainingState]:
+        """Fit and forecast from a supplied merged weekly influenza/weather table."""
+        state = self.fit_forecasting_state_for_frame(frame)
+        return self._forecast_result_from_state(state, origin_date=origin_date), state
+
+    def compare_epidemic_waves(
+        self, *, season_start_week: int = 40, smooth_window: int = 3, n_last_seasons: int = 3
+    ) -> dict[str, Any]:
+        """Compare recent epidemic waves in the aggregate weekly incidence series."""
+        df = self._raw_data.copy() if self._raw_data is not None else self.load_data()
+        return _jsonable(
+            compare_recent_epidemic_waves(
+                df,
+                season_start_week=season_start_week,
+                smooth_window=smooth_window,
+                n_last_seasons=n_last_seasons,
+                target_col="inc_per_10k",
+            )
+        )
+
+
