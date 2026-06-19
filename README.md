@@ -239,21 +239,117 @@ INFLUENZA_DB_TIMEOUT_SECONDS=60
 
 `ENDPOINT_URL`, `ACCESS_KEY`, `SECRET_KEY`, and `BUCKET_NAME` follow the names used by `dataset-collection-mcp-server`. The server also accepts `S3_ENDPOINT_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, and `S3_BUCKET_NAME` as aliases for compatibility with the chemical MCP-server style.
 
-## Run with uv
+## Local Windows startup: MinIO + `python epid_forecasting_server.py`
 
-```bash
-cd mcp-servers/epid-forecasting-mcp-server
-cp .env.example .env
-# Edit .env with actual object-storage credentials.
-set -a && source .env && set +a
-uv sync --frozen
-uv run python epid_forecasting_server.py
+This is the recommended development workflow for running the MCP server locally: start MinIO in Docker, run the server from the project interpreter, then connect MCP Inspector.
+
+### 1. Start MinIO
+
+For an existing container named `minio`:
+
+```powershell
+docker start minio
+docker ps --filter "name=minio"
+```
+
+For the first local setup, create a container with an S3 API port and a browser-console port. Replace the placeholder credentials before running the command; keep the same values in `.env`.
+
+```powershell
+docker run -d --name minio -p 9000:9000 -p 9001:9001 -e "MINIO_ROOT_USER=<local-access-key>" -e "MINIO_ROOT_PASSWORD=<local-secret-key>" quay.io/minio/minio server /data --console-address ":9001"
+```
+
+Open the MinIO Console in a browser:
+
+```text
+http://localhost:9001
+```
+
+Create the bucket configured in `BUCKET_NAME`, for example `epid-forecasting-artifacts`. The application uses `http://localhost:9000` for S3 operations; port `9001` is only the MinIO browser console.
+
+### 2. Configure `.env`
+
+Create `.env` from `.env.example`. On a local Windows run, either omit `EPID_DATA_PATH` or point it to the bundled relative path; do not use the Docker-only `/app/...` path.
+
+```dotenv
+# Optional: omit this line to use the bundled default dataset path.
+EPID_DATA_PATH=data/influenza_weather_spb_dataset.csv
+
+ENDPOINT_URL=http://localhost:9000
+ACCESS_KEY=<same-as-MINIO_ROOT_USER>
+SECRET_KEY=<same-as-MINIO_ROOT_PASSWORD>
+BUCKET_NAME=epid-forecasting-artifacts
+PRESIGNED_URL_EXPIRATION_SECONDS=3600
+
+INFLUENZA_DB_AUTH_TOKEN=<your-NII-influenza-DB-token>
+INFLUENZA_DB_TIMEOUT_SECONDS=60
+```
+
+Do not commit `.env`, object-storage credentials, or the NII influenza DB token.
+
+### 3. Create and use the project virtual environment
+
+From the project root, create a Python 3.11+ virtual environment and install the project dependencies:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e .
+python -m pip install pytest
+python -m pytest
+```
+
+In PyCharm, select `.venv` as the project interpreter. Then start the MCP server from the project terminal:
+
+```powershell
+python epid_forecasting_server.py
 ```
 
 The MCP endpoint is:
 
 ```text
 http://localhost:7331/mcp
+```
+
+Leave this process running while calling tools.
+
+### 4. Connect MCP Inspector
+
+Start Inspector in a second terminal:
+
+```powershell
+npx @modelcontextprotocol/inspector
+```
+
+In Inspector, use:
+
+```text
+Transport: Streamable HTTP
+URL: http://localhost:7331/mcp
+Connection: Via Proxy
+```
+
+A minimal smoke test is `list_influenza_db_cities`. To verify the storage path after a tool run, open MinIO Console, select the configured bucket, and inspect the run prefix:
+
+```text
+<user_id>/<session_id>/epid_forecasting/...
+```
+
+### Local troubleshooting
+
+- **MinIO Console opens, but artifact uploads fail:** confirm that `.env` uses `http://localhost:9000`, not the console port `9001`, and that the bucket exists.
+- **`docker start minio` reports that the container does not exist:** create it with the first-setup command above.
+- **`python` cannot import project packages:** activate `.venv` in the terminal or select `.venv` as the project interpreter in PyCharm.
+- **DB-backed tools fail while static GBDT tools work:** verify `INFLUENZA_DB_AUTH_TOKEN` in `.env` without placing the token in code, logs, or issue reports.
+
+## Run from a shell
+
+After the initial installation, activate the project virtual environment before running the server:
+
+```powershell
+cd mcp-servers\epid-forecasting-mcp-server
+.\.venv\Scripts\Activate.ps1
+python epid_forecasting_server.py
 ```
 
 ## Run with Docker Compose
@@ -272,9 +368,10 @@ http://localhost:7335/mcp
 
 ## Test
 
-```bash
-cd mcp-servers/epid-forecasting-mcp-server
-uv run --frozen pytest
+```powershell
+cd mcp-servers\epid-forecasting-mcp-server
+.\.venv\Scripts\Activate.ps1
+python -m pytest
 ```
 
-Current validation status for this patch set: `18 passed`.
+Run the tests after dependency or code changes before starting the server.
