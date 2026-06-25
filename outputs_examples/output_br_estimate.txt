@@ -1,0 +1,172 @@
+{
+  "answer": "Estimated alpha/beta distributions for the compact Baroyan-Rvachev-style mechanistic model for Санкт-Петербург and uploaded the figures to S3.",
+  "metadata": {
+    "city": {
+      "slug": "spb",
+      "api_id": 38,
+      "name_ru": "Санкт-Петербург"
+    },
+    "request": {
+      "begin_year": 2024,
+      "begin_week": 40,
+      "end_year": 2026,
+      "end_week": 26
+    },
+    "source_url": "https://db.influenza.spb.ru/scripts/report/rmancgi.exe?reportname=get_csv&id=aripcr&byear=2024&bweek=40&eyear=2026&eweek=26&district=38&auth=%3Credacted%3E",
+    "configuration": {
+      "model_family": "compact_baroyan_rvachev_style_renewal_model",
+      "forecast_type": "total",
+      "method": "mcmc",
+      "forecast_duration_weeks": 1,
+      "calibration_window_weeks": 26,
+      "posterior_samples": 200,
+      "random_state": 42
+    },
+    "diagnostics": {
+      "calibration_backend": "random_walk_metropolis_conditional_pseudo_posterior",
+      "objective": "mean_squared_log1p_error_on_weekly_estimated_influenza_cases",
+      "r2_observed_vs_fitted": 0.2496208326819256,
+      "mae_cases": 1792.4159946084217,
+      "rmse_cases": 3042.0030998092075,
+      "optimizer_best_fit_loss": 3.08186667801238,
+      "uncertainty_sample_loss_quantiles": {
+        "p10": 3.083576710879983,
+        "p50": 3.1234474276555755,
+        "p90": 3.424413078649393
+      },
+      "uncertainty_sample_loss_median": 3.1234474276555755,
+      "uncertainty_sample_count": 200,
+      "optimizer_reference_row_in_parameter_samples": true,
+      "forecast_interval_method": "parameter_sample_quantiles",
+      "sample_kind": "conditional_gaussian_log1p_pseudo_posterior",
+      "observation_error_model": "gaussian_log1p_residuals_with_plugin_sigma",
+      "observation_log1p_sigma": 1.827207952363408,
+      "retained_draws_before_thinning": 500,
+      "selected_draws": 200,
+      "mcmc_acceptance_rate_total": 0.265,
+      "mcmc_acceptance_rate_post_burn": 0.278,
+      "final_proposal_scale_unconstrained": 0.11250000000000002,
+      "reference_estimate": "optimizer_best_fit",
+      "observed_weeks": 26,
+      "optimizer_parameter_bounds": {
+        "alpha_total": {
+          "at_lower_bound": false,
+          "at_upper_bound": false
+        },
+        "beta_total": {
+          "at_lower_bound": false,
+          "at_upper_bound": true
+        }
+      },
+      "optimizer_at_any_parameter_bound": true
+    },
+    "parameter_summary": {
+      "optimizer_best_fit": {
+        "alpha_total": 0.2996277294278028,
+        "beta_total": 0.99
+      },
+      "optimizer_parameter_bounds": {
+        "alpha_total": {
+          "at_lower_bound": false,
+          "at_upper_bound": false
+        },
+        "beta_total": {
+          "at_lower_bound": false,
+          "at_upper_bound": true
+        }
+      },
+      "best_fit": {
+        "alpha_total": 0.2996277294278028,
+        "beta_total": 0.99
+      },
+      "uncertainty_samples": {
+        "sample_kind": "conditional_gaussian_log1p_pseudo_posterior",
+        "reference_estimate": "optimizer_best_fit",
+        "parameter_quantiles": {
+          "alpha_total": {
+            "p10": 0.295936181292958,
+            "p50": 0.3006439932214206,
+            "p90": 0.3067824087415992
+          },
+          "beta_total": {
+            "p10": 0.9899999870305957,
+            "p50": 0.9899999981217229,
+            "p90": 0.9899999991501587
+          }
+        },
+        "calibration_loss_quantiles": {
+          "p10": 3.083576710879983,
+          "p50": 3.1234474276555755,
+          "p90": 3.424413078649393
+        },
+        "sample_count": 200,
+        "optimizer_reference_row_in_artifact": true
+      }
+    },
+    "observed_period": {
+      "start": "2025-12-22",
+      "end": "2026-06-15",
+      "weeks": 26
+    },
+    "forecast_period": {
+      "start": "2026-06-22",
+      "end": "2026-06-22",
+      "weeks": 1
+    },
+    "limitations": [
+      "This caller-selected mechanistic forecast does not inherit the validation or split-conformal uncertainty guarantees of the default GBDT workflow.",
+      "Alpha and beta are fitted model parameters; they should not be interpreted as directly observed biological quantities.",
+      "Age-mode influenza cases are allocated from estimated total influenza cases using the observed ARI age composition.",
+      "The displayed forecast interval reflects quantiles across the reported calibration sample set, not the GBDT conformal interval.",
+      "For MCMC, uncertainty draws target a conditional Gaussian log1p-residual pseudo-posterior with a plug-in residual scale; they are conditional model-based uncertainty, not a full external validation guarantee.",
+      "At least one optimizer parameter reached a configured calibration bound; this indicates a constrained or weakly identified fit and should be interpreted cautiously."
+    ],
+    "result_delivery": {
+      "mode": "inline_summary_plus_s3_artifacts",
+      "storage": "s3_compatible",
+      "authentication": "server_side_s3_and_influenza_db_credentials",
+      "client_download_access": "temporary_presigned_urls"
+    },
+    "run_id": "32f827d5-eceb-4e4b-9bd7-f2e860b23e54",
+    "storage_prefix": "1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54",
+    "download_access": "presigned_urls",
+    "presigned_url_expiration_seconds": 3600,
+    "artifacts": {
+      "trajectory": {
+        "s3_uri": "s3://influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/trajectory.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/trajectory.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T150740Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=0e48f7a4179ec4b83e9c00e4d7bc4f54baa6559fed29cb0d54f28f6c2d581791",
+        "content_type": "text/csv"
+      },
+      "parameter_samples": {
+        "s3_uri": "s3://influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/parameter_samples.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/parameter_samples.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T150740Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ad94c2227248f3f308e22410aac76ed6930a3a4e4f088307ebcf4708f138c7df",
+        "content_type": "text/csv"
+      },
+      "run_summary": {
+        "s3_uri": "s3://influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/run_summary.json",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/run_summary.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T150740Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=70a1015c60d61cfd8050fe3215819b0265b292233cef7f01de4c782cee9c94d2",
+        "content_type": "application/json"
+      },
+      "alpha_distribution_png": {
+        "s3_uri": "s3://influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/alpha_distribution.png",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/alpha_distribution.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T150740Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=5d238629f06b86353f333b68a36baf596ca06300ee36e1429bc55a8b0a5a50eb",
+        "content_type": "image/png"
+      },
+      "alpha_distribution_pdf": {
+        "s3_uri": "s3://influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/alpha_distribution.pdf",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/alpha_distribution.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T150740Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=45dc627b4f50dda54d2acc589f4c61e0de4f03cfb97970ad12bc0825d214f8e3",
+        "content_type": "application/pdf"
+      },
+      "beta_distribution_png": {
+        "s3_uri": "s3://influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/beta_distribution.png",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/beta_distribution.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T150740Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=54f5084da161975514c42f32ebfdb80aebc463233f8bf5d260f2a586abd17f96",
+        "content_type": "image/png"
+      },
+      "beta_distribution_pdf": {
+        "s3_uri": "s3://influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/beta_distribution.pdf",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/1/epid_forecasting/br_calibration/parameter_estimation/32f827d5-eceb-4e4b-9bd7-f2e860b23e54/beta_distribution.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T150740Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=16b6673ba7072c7687ddad7576c3695376d4ef0ad24d89989820ec068ed2a4f0",
+        "content_type": "application/pdf"
+      }
+    }
+  }
+}

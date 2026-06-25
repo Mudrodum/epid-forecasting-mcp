@@ -1,0 +1,32 @@
+{
+  "answer": "✅ Successfully generated parameter estimation for spb using mcmc method.\n☁️ Uploaded to S3: alpha and beta distribution plots\n🔗 URLs valid for 1 hour",
+  "metadata": {
+    "city": "spb",
+    "method": "mcmc",
+    "forecast_type": "total",
+    "status": "completed",
+    "s3": {
+      "urls": {
+        "alpha": {
+          "png": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260623_181457/alpha_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T151457Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=fa4bee6cb123561c5d05f7045e453cb5e83c001e2c2c393f478e2f0744144c82",
+          "pdf": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260623_181457/alpha_pdf_3.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T151457Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=6d4204bfcf0f9ac7cadb6e799c39e5157208bcc16d8c473e59b370fddc60f1e9"
+        },
+        "beta": {
+          "png": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260623_181457/beta_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T151457Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a7418c4882cf2190d5ebc0a1cd6ac1e18db14cef5df1a05bbd42bc0556e76e6e",
+          "pdf": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260623_181457/beta_pdf_3.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T151457Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=c6ee284fea241614c8844ca0898a0a71592ab6fd13bd77d3d1dbd3780bc94575"
+        }
+      },
+      "paths": {
+        "alpha": {
+          "png": "params_estimation/spb/mcmc/total/3/20260623_181457/alpha_png_3.png",
+          "pdf": "params_estimation/spb/mcmc/total/3/20260623_181457/alpha_pdf_3.pdf"
+        },
+        "beta": {
+          "png": "params_estimation/spb/mcmc/total/3/20260623_181457/beta_png_3.png",
+          "pdf": "params_estimation/spb/mcmc/total/3/20260623_181457/beta_pdf_3.pdf"
+        }
+      },
+      "urls_valid_for_seconds": 3600
+    }
+  }
+}

@@ -1,0 +1,1669 @@
+{
+  "answer": "Prepared and returned an inline influenza bulletin evidence packet using the compact BR mechanistic forecast engine for Санкт-Петербург; alpha/beta evidence and full artifacts were uploaded to S3.",
+  "metadata": {
+    "city": {
+      "slug": "spb",
+      "api_id": 38,
+      "name_ru": "Санкт-Петербург"
+    },
+    "request": {
+      "begin_year": 2011,
+      "begin_week": 1,
+      "end_year": 2026,
+      "end_week": 26
+    },
+    "date_range": {
+      "start": "2011-01-03",
+      "end": "2026-06-15"
+    },
+    "source_url": "https://db.influenza.spb.ru/scripts/report/rmancgi.exe?reportname=get_csv&id=aripcr&byear=2011&bweek=1&eyear=2026&eweek=26&district=38&auth=%3Credacted%3E",
+    "bulletin_context": {
+      "schema_version": "epid_forecasting.bulletin_context.v3",
+      "prepared_at_utc": "2026-06-24T10:21:24+00:00",
+      "purpose": "structured_evidence_for_external_bulletin_writing",
+      "city": {
+        "slug": "spb",
+        "api_id": 38,
+        "name_ru": "Санкт-Петербург"
+      },
+      "request": {
+        "begin_year": 2011,
+        "begin_week": 1,
+        "end_year": 2026,
+        "end_week": 26
+      },
+      "date_range": {
+        "start": "2011-01-03",
+        "end": "2026-06-15"
+      },
+      "source": {
+        "influenza_db_url": "https://db.influenza.spb.ru/scripts/report/rmancgi.exe?reportname=get_csv&id=aripcr&byear=2011&bweek=1&eyear=2026&eweek=26&district=38&auth=%3Credacted%3E",
+        "token_policy": "redacted_server_side_only"
+      },
+      "parameters": {
+        "season": "2025-2026",
+        "forecast_engine": "br",
+        "include_weather": true,
+        "include_forecast": true,
+        "include_shap_requested": true,
+        "include_shap_effective": false,
+        "origin_date": null,
+        "trend_window_weeks": 4,
+        "peak_width_fraction": 0.5,
+        "season_start_week": 40,
+        "smooth_window": 3,
+        "n_last_seasons": 3,
+        "shap_max_test_samples": 64,
+        "shap_background_size": 128,
+        "br_forecast_type": "total",
+        "br_method": "mcmc",
+        "br_forecast_duration_weeks": 4,
+        "br_calibration_window_weeks": 26
+      },
+      "forecast_model": {
+        "engine": "br",
+        "label": "Compact Baroyan-Rvachev-style mechanistic renewal model",
+        "model_family": "compact_baroyan_rvachev_style_renewal_model",
+        "forecast_type": "total",
+        "calibration_method": "mcmc",
+        "explanation_section": "mechanistic_model_interpretation"
+      },
+      "writing_constraints": [
+        "Use only the quantitative evidence in this context and referenced artifacts.",
+        "Do not infer causal explanations from correlations, SHAP attributions, or curve geometry.",
+        "Do not declare formal epidemic thresholds unless a threshold is explicitly present in evidence.",
+        "Keep uncertainty and data-coverage caveats visible.",
+        "For the BR engine, do not describe alpha or beta as directly measured biological constants."
+      ],
+      "suggested_report_sections": [
+        "current_situation",
+        "short_term_forecast",
+        "mechanistic_model_interpretation",
+        "epidemic_wave_comparison",
+        "age_group_patterns",
+        "limitations"
+      ],
+      "current_situation": {
+        "latest_week": {
+          "date": "2026-06-15",
+          "iso_year": 2026,
+          "iso_week": 25,
+          "inc_per_10k": 0.507
+        },
+        "previous_week": {
+          "date": "2026-06-08",
+          "iso_year": 2026,
+          "iso_week": 24,
+          "inc_per_10k": 0.263
+        },
+        "week_over_week_change_abs": 0.245,
+        "week_over_week_change_pct": 93.2,
+        "recent_window_weeks": 4,
+        "recent_mean_inc_per_10k": 0.289,
+        "previous_window_mean_inc_per_10k": 2.016,
+        "recent_vs_previous_window_pct": -85.7
+      },
+      "weather_source": {
+        "status": "included",
+        "source": "Open-Meteo Archive API",
+        "source_url": "https://archive-api.open-meteo.com/v1/archive",
+        "location": {
+          "city": "spb",
+          "query": "Saint Petersburg",
+          "latitude": 59.9311,
+          "longitude": 30.3609,
+          "timezone": "Europe/Moscow",
+          "source": "preset"
+        },
+        "request": {
+          "city": "spb",
+          "start_date": "2011-01-03",
+          "end_date": "2026-06-21",
+          "latitude": null,
+          "longitude": null,
+          "timezone": null
+        },
+        "hourly_rows": 135576,
+        "weekly_rows": 807,
+        "date_range": {
+          "start": "2011-01-03",
+          "end": "2026-06-15"
+        }
+      },
+      "short_term_forecast": {
+        "status": "included",
+        "forecast_engine": "br",
+        "forecast_origin_date": "2026-06-15",
+        "target_variable": "estimated influenza cases and incidence per 10,000",
+        "forecast_horizon_weeks": 4,
+        "forecast": [
+          {
+            "datetime": "2026-06-22",
+            "group": "total",
+            "fitted_cases": 105.48297382708077,
+            "pi80_lower_cases": 63.71315692767965,
+            "pi80_upper_cases": 268.05572290630374,
+            "fitted_inc_per_10k": 0.18843772740482362,
+            "pi80_lower_inc_per_10k": 0.1138189611237197,
+            "pi80_upper_inc_per_10k": 0.4788622221167701
+          },
+          {
+            "datetime": "2026-06-29",
+            "group": "total",
+            "fitted_cases": 91.24039931532332,
+            "pi80_lower_cases": 54.151531520551046,
+            "pi80_upper_cases": 239.13302881634598,
+            "fitted_inc_per_10k": 0.1629943949311954,
+            "pi80_lower_inc_per_10k": 0.09673780672842178,
+            "pi80_upper_inc_per_10k": 0.42719391445537436
+          },
+          {
+            "datetime": "2026-07-06",
+            "group": "total",
+            "fitted_cases": 78.91375059394345,
+            "pi80_lower_cases": 46.02236292816628,
+            "pi80_upper_cases": 213.2809039780318,
+            "fitted_inc_per_10k": 0.14097372574355763,
+            "pi80_lower_inc_per_10k": 0.08221563315232581,
+            "pi80_upper_inc_per_10k": 0.3810109573735648
+          },
+          {
+            "datetime": "2026-07-13",
+            "group": "total",
+            "fitted_cases": 68.24709926660667,
+            "pi80_lower_cases": 39.111741307416935,
+            "pi80_upper_cases": 190.18371960058946,
+            "fitted_inc_per_10k": 0.12191852221433216,
+            "pi80_lower_inc_per_10k": 0.06987030588364841,
+            "pi80_upper_inc_per_10k": 0.3397495027935078
+          }
+        ],
+        "uncertainty_bounds": {
+          "method": "parameter_sample_quantiles",
+          "sample_kind": "conditional_gaussian_log1p_pseudo_posterior",
+          "lower_column": "pi80_lower_inc_per_10k",
+          "upper_column": "pi80_upper_inc_per_10k",
+          "interpretation": "The 80% interval reflects quantiles across conditional Gaussian log1p-residual pseudo-posterior parameter draws; it is not a split-conformal prediction interval."
+        }
+      },
+      "epidemic_wave_comparison": {
+        "series_name": "inc_per_10k",
+        "comparison_mode": "recent_epidemic_waves",
+        "season_definition": "ISO weeks 40..39",
+        "smoothing": {
+          "method": "centered_rolling_mean",
+          "window_weeks": 3
+        },
+        "width_definition": "FWHM-like width on the smoothed weekly curve",
+        "season_labels": [
+          "2023-2024",
+          "2024-2025",
+          "2025-2026"
+        ],
+        "latest_wave_status": "complete",
+        "waves": [
+          {
+            "season_start_year": 2023,
+            "season_label": "2023-2024",
+            "wave_status": "complete",
+            "observed_until": "2024-09-23",
+            "n_observed_weeks": 52,
+            "peak_week": 51,
+            "peak_date": "2023-12-18",
+            "peak_value": 40.624,
+            "half_height_value": 20.312,
+            "left_half_cross_pos": 8.647,
+            "right_half_cross_pos": 13.77,
+            "fwhm_weeks": 5.123,
+            "fwhm_lower_bound_weeks": null,
+            "left_span_weeks": 2.353,
+            "right_span_weeks": 2.77,
+            "asymmetry_ratio": 1.177,
+            "season_burden": 226.126,
+            "secondary_peak_ratio": 0.246,
+            "plot_points": [
+              {
+                "week": 40,
+                "pos": 0,
+                "date": "2023-10-02",
+                "value_raw": 0,
+                "value_smooth": 0.061
+              },
+              {
+                "week": 41,
+                "pos": 1,
+                "date": "2023-10-09",
+                "value_raw": 0.123,
+                "value_smooth": 0.041
+              },
+              {
+                "week": 42,
+                "pos": 2,
+                "date": "2023-10-16",
+                "value_raw": 0,
+                "value_smooth": 0.113
+              },
+              {
+                "week": 43,
+                "pos": 3,
+                "date": "2023-10-23",
+                "value_raw": 0.216,
+                "value_smooth": 0.149
+              },
+              {
+                "week": 44,
+                "pos": 4,
+                "date": "2023-10-30",
+                "value_raw": 0.231,
+                "value_smooth": 0.182
+              },
+              {
+                "week": 45,
+                "pos": 5,
+                "date": "2023-11-06",
+                "value_raw": 0.1,
+                "value_smooth": 0.472
+              },
+              {
+                "week": 46,
+                "pos": 6,
+                "date": "2023-11-13",
+                "value_raw": 1.084,
+                "value_smooth": 1.713
+              },
+              {
+                "week": 47,
+                "pos": 7,
+                "date": "2023-11-20",
+                "value_raw": 3.955,
+                "value_smooth": 5.994
+              },
+              {
+                "week": 48,
+                "pos": 8,
+                "date": "2023-11-27",
+                "value_raw": 12.943,
+                "value_smooth": 13.128
+              },
+              {
+                "week": 49,
+                "pos": 9,
+                "date": "2023-12-04",
+                "value_raw": 22.486,
+                "value_smooth": 24.229
+              },
+              {
+                "week": 50,
+                "pos": 10,
+                "date": "2023-12-11",
+                "value_raw": 37.259,
+                "value_smooth": 34.898
+              },
+              {
+                "week": 51,
+                "pos": 11,
+                "date": "2023-12-18",
+                "value_raw": 44.948,
+                "value_smooth": 40.624
+              },
+              {
+                "week": 52,
+                "pos": 12,
+                "date": "2023-12-25",
+                "value_raw": 39.665,
+                "value_smooth": 29.353
+              },
+              {
+                "week": 1,
+                "pos": 14,
+                "date": "2024-01-01",
+                "value_raw": 3.446,
+                "value_smooth": 19.14
+              },
+              {
+                "week": 2,
+                "pos": 15,
+                "date": "2024-01-08",
+                "value_raw": 14.309,
+                "value_smooth": 9.492
+              },
+              {
+                "week": 3,
+                "pos": 16,
+                "date": "2024-01-15",
+                "value_raw": 10.721,
+                "value_smooth": 10.011
+              },
+              {
+                "week": 4,
+                "pos": 17,
+                "date": "2024-01-22",
+                "value_raw": 5.002,
+                "value_smooth": 6.49
+              },
+              {
+                "week": 5,
+                "pos": 18,
+                "date": "2024-01-29",
+                "value_raw": 3.746,
+                "value_smooth": 3.707
+              },
+              {
+                "week": 6,
+                "pos": 19,
+                "date": "2024-02-05",
+                "value_raw": 2.371,
+                "value_smooth": 2.679
+              },
+              {
+                "week": 7,
+                "pos": 20,
+                "date": "2024-02-12",
+                "value_raw": 1.92,
+                "value_smooth": 1.996
+              },
+              {
+                "week": 8,
+                "pos": 21,
+                "date": "2024-02-19",
+                "value_raw": 1.698,
+                "value_smooth": 1.351
+              },
+              {
+                "week": 9,
+                "pos": 22,
+                "date": "2024-02-26",
+                "value_raw": 0.436,
+                "value_smooth": 0.827
+              },
+              {
+                "week": 10,
+                "pos": 23,
+                "date": "2024-03-04",
+                "value_raw": 0.348,
+                "value_smooth": 0.261
+              },
+              {
+                "week": 11,
+                "pos": 24,
+                "date": "2024-03-11",
+                "value_raw": 0,
+                "value_smooth": 0.227
+              },
+              {
+                "week": 12,
+                "pos": 25,
+                "date": "2024-03-18",
+                "value_raw": 0.334,
+                "value_smooth": 0.111
+              },
+              {
+                "week": 13,
+                "pos": 26,
+                "date": "2024-03-25",
+                "value_raw": 0,
+                "value_smooth": 1.136
+              },
+              {
+                "week": 14,
+                "pos": 27,
+                "date": "2024-04-01",
+                "value_raw": 3.075,
+                "value_smooth": 1.025
+              },
+              {
+                "week": 15,
+                "pos": 28,
+                "date": "2024-04-08",
+                "value_raw": 0,
+                "value_smooth": 1.661
+              },
+              {
+                "week": 16,
+                "pos": 29,
+                "date": "2024-04-15",
+                "value_raw": 1.907,
+                "value_smooth": 1.183
+              },
+              {
+                "week": 17,
+                "pos": 30,
+                "date": "2024-04-22",
+                "value_raw": 1.643,
+                "value_smooth": 1.663
+              },
+              {
+                "week": 18,
+                "pos": 31,
+                "date": "2024-04-29",
+                "value_raw": 1.439,
+                "value_smooth": 2.94
+              },
+              {
+                "week": 19,
+                "pos": 32,
+                "date": "2024-05-06",
+                "value_raw": 5.739,
+                "value_smooth": 3.57
+              },
+              {
+                "week": 20,
+                "pos": 33,
+                "date": "2024-05-13",
+                "value_raw": 3.532,
+                "value_smooth": 3.172
+              },
+              {
+                "week": 21,
+                "pos": 34,
+                "date": "2024-05-20",
+                "value_raw": 0.245,
+                "value_smooth": 1.443
+              },
+              {
+                "week": 22,
+                "pos": 35,
+                "date": "2024-05-27",
+                "value_raw": 0.552,
+                "value_smooth": 0.265
+              },
+              {
+                "week": 23,
+                "pos": 36,
+                "date": "2024-06-03",
+                "value_raw": 0,
+                "value_smooth": 0.184
+              },
+              {
+                "week": 24,
+                "pos": 37,
+                "date": "2024-06-10",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 25,
+                "pos": 38,
+                "date": "2024-06-17",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 26,
+                "pos": 39,
+                "date": "2024-06-24",
+                "value_raw": 0,
+                "value_smooth": 0.058
+              },
+              {
+                "week": 27,
+                "pos": 40,
+                "date": "2024-07-01",
+                "value_raw": 0.173,
+                "value_smooth": 0.14
+              },
+              {
+                "week": 28,
+                "pos": 41,
+                "date": "2024-07-08",
+                "value_raw": 0.246,
+                "value_smooth": 0.14
+              },
+              {
+                "week": 29,
+                "pos": 42,
+                "date": "2024-07-15",
+                "value_raw": 0,
+                "value_smooth": 0.16
+              },
+              {
+                "week": 30,
+                "pos": 43,
+                "date": "2024-07-22",
+                "value_raw": 0.232,
+                "value_smooth": 0.077
+              },
+              {
+                "week": 31,
+                "pos": 44,
+                "date": "2024-07-29",
+                "value_raw": 0,
+                "value_smooth": 0.077
+              },
+              {
+                "week": 32,
+                "pos": 45,
+                "date": "2024-08-05",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 33,
+                "pos": 46,
+                "date": "2024-08-12",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 34,
+                "pos": 47,
+                "date": "2024-08-19",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 35,
+                "pos": 48,
+                "date": "2024-08-26",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 36,
+                "pos": 49,
+                "date": "2024-09-02",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 37,
+                "pos": 50,
+                "date": "2024-09-09",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 38,
+                "pos": 51,
+                "date": "2024-09-16",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 39,
+                "pos": 52,
+                "date": "2024-09-23",
+                "value_raw": 0,
+                "value_smooth": 0
+              }
+            ]
+          },
+          {
+            "season_start_year": 2024,
+            "season_label": "2024-2025",
+            "wave_status": "complete",
+            "observed_until": "2025-09-22",
+            "n_observed_weeks": 52,
+            "peak_week": 12,
+            "peak_date": "2025-03-17",
+            "peak_value": 26.634,
+            "half_height_value": 13.317,
+            "left_half_cross_pos": 19.231,
+            "right_half_cross_pos": 28.811,
+            "fwhm_weeks": 9.58,
+            "fwhm_lower_bound_weeks": null,
+            "left_span_weeks": 5.769,
+            "right_span_weeks": 3.811,
+            "asymmetry_ratio": 0.661,
+            "season_burden": 281.232,
+            "secondary_peak_ratio": 0.787,
+            "plot_points": [
+              {
+                "week": 40,
+                "pos": 0,
+                "date": "2024-09-30",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 41,
+                "pos": 1,
+                "date": "2024-10-07",
+                "value_raw": 0,
+                "value_smooth": 0.199
+              },
+              {
+                "week": 42,
+                "pos": 2,
+                "date": "2024-10-14",
+                "value_raw": 0.596,
+                "value_smooth": 0.199
+              },
+              {
+                "week": 43,
+                "pos": 3,
+                "date": "2024-10-21",
+                "value_raw": 0,
+                "value_smooth": 0.376
+              },
+              {
+                "week": 44,
+                "pos": 4,
+                "date": "2024-10-28",
+                "value_raw": 0.532,
+                "value_smooth": 0.177
+              },
+              {
+                "week": 45,
+                "pos": 5,
+                "date": "2024-11-04",
+                "value_raw": 0,
+                "value_smooth": 0.177
+              },
+              {
+                "week": 46,
+                "pos": 6,
+                "date": "2024-11-11",
+                "value_raw": 0,
+                "value_smooth": 1.047
+              },
+              {
+                "week": 47,
+                "pos": 7,
+                "date": "2024-11-18",
+                "value_raw": 3.141,
+                "value_smooth": 1.047
+              },
+              {
+                "week": 48,
+                "pos": 8,
+                "date": "2024-11-25",
+                "value_raw": 0,
+                "value_smooth": 1.255
+              },
+              {
+                "week": 49,
+                "pos": 9,
+                "date": "2024-12-02",
+                "value_raw": 0.623,
+                "value_smooth": 0.208
+              },
+              {
+                "week": 50,
+                "pos": 10,
+                "date": "2024-12-09",
+                "value_raw": 0,
+                "value_smooth": 0.405
+              },
+              {
+                "week": 51,
+                "pos": 11,
+                "date": "2024-12-16",
+                "value_raw": 0.593,
+                "value_smooth": 0.846
+              },
+              {
+                "week": 52,
+                "pos": 12,
+                "date": "2024-12-23",
+                "value_raw": 1.946,
+                "value_smooth": 1.549
+              },
+              {
+                "week": 1,
+                "pos": 14,
+                "date": "2024-12-30",
+                "value_raw": 2.107,
+                "value_smooth": 2.79
+              },
+              {
+                "week": 2,
+                "pos": 15,
+                "date": "2025-01-06",
+                "value_raw": 4.318,
+                "value_smooth": 3.39
+              },
+              {
+                "week": 3,
+                "pos": 16,
+                "date": "2025-01-13",
+                "value_raw": 3.744,
+                "value_smooth": 5.806
+              },
+              {
+                "week": 4,
+                "pos": 17,
+                "date": "2025-01-20",
+                "value_raw": 9.356,
+                "value_smooth": 7.143
+              },
+              {
+                "week": 5,
+                "pos": 18,
+                "date": "2025-01-27",
+                "value_raw": 8.33,
+                "value_smooth": 8.799
+              },
+              {
+                "week": 6,
+                "pos": 19,
+                "date": "2025-02-03",
+                "value_raw": 8.712,
+                "value_smooth": 11.985
+              },
+              {
+                "week": 7,
+                "pos": 20,
+                "date": "2025-02-10",
+                "value_raw": 18.911,
+                "value_smooth": 17.755
+              },
+              {
+                "week": 8,
+                "pos": 21,
+                "date": "2025-02-17",
+                "value_raw": 25.642,
+                "value_smooth": 20.954
+              },
+              {
+                "week": 9,
+                "pos": 22,
+                "date": "2025-02-24",
+                "value_raw": 18.307,
+                "value_smooth": 20.652
+              },
+              {
+                "week": 10,
+                "pos": 23,
+                "date": "2025-03-03",
+                "value_raw": 18.007,
+                "value_smooth": 18.872
+              },
+              {
+                "week": 11,
+                "pos": 24,
+                "date": "2025-03-10",
+                "value_raw": 20.301,
+                "value_smooth": 23.431
+              },
+              {
+                "week": 12,
+                "pos": 25,
+                "date": "2025-03-17",
+                "value_raw": 31.984,
+                "value_smooth": 26.634
+              },
+              {
+                "week": 13,
+                "pos": 26,
+                "date": "2025-03-24",
+                "value_raw": 27.618,
+                "value_smooth": 26.603
+              },
+              {
+                "week": 14,
+                "pos": 27,
+                "date": "2025-03-31",
+                "value_raw": 20.208,
+                "value_smooth": 21.894
+              },
+              {
+                "week": 15,
+                "pos": 28,
+                "date": "2025-04-07",
+                "value_raw": 17.855,
+                "value_smooth": 16.778
+              },
+              {
+                "week": 16,
+                "pos": 29,
+                "date": "2025-04-14",
+                "value_raw": 12.271,
+                "value_smooth": 12.51
+              },
+              {
+                "week": 17,
+                "pos": 30,
+                "date": "2025-04-21",
+                "value_raw": 7.405,
+                "value_smooth": 8.689
+              },
+              {
+                "week": 18,
+                "pos": 31,
+                "date": "2025-04-28",
+                "value_raw": 6.39,
+                "value_smooth": 6.155
+              },
+              {
+                "week": 19,
+                "pos": 32,
+                "date": "2025-05-05",
+                "value_raw": 4.672,
+                "value_smooth": 4.929
+              },
+              {
+                "week": 20,
+                "pos": 33,
+                "date": "2025-05-12",
+                "value_raw": 3.725,
+                "value_smooth": 3.248
+              },
+              {
+                "week": 21,
+                "pos": 34,
+                "date": "2025-05-19",
+                "value_raw": 1.349,
+                "value_smooth": 2.083
+              },
+              {
+                "week": 22,
+                "pos": 35,
+                "date": "2025-05-26",
+                "value_raw": 1.175,
+                "value_smooth": 0.963
+              },
+              {
+                "week": 23,
+                "pos": 36,
+                "date": "2025-06-02",
+                "value_raw": 0.366,
+                "value_smooth": 0.514
+              },
+              {
+                "week": 24,
+                "pos": 37,
+                "date": "2025-06-09",
+                "value_raw": 0,
+                "value_smooth": 0.172
+              },
+              {
+                "week": 25,
+                "pos": 38,
+                "date": "2025-06-16",
+                "value_raw": 0.15,
+                "value_smooth": 0.05
+              },
+              {
+                "week": 26,
+                "pos": 39,
+                "date": "2025-06-23",
+                "value_raw": 0,
+                "value_smooth": 0.05
+              },
+              {
+                "week": 27,
+                "pos": 40,
+                "date": "2025-06-30",
+                "value_raw": 0,
+                "value_smooth": 0.064
+              },
+              {
+                "week": 28,
+                "pos": 41,
+                "date": "2025-07-07",
+                "value_raw": 0.193,
+                "value_smooth": 0.064
+              },
+              {
+                "week": 29,
+                "pos": 42,
+                "date": "2025-07-14",
+                "value_raw": 0,
+                "value_smooth": 0.064
+              },
+              {
+                "week": 30,
+                "pos": 43,
+                "date": "2025-07-21",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 31,
+                "pos": 44,
+                "date": "2025-07-28",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 32,
+                "pos": 45,
+                "date": "2025-08-04",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 33,
+                "pos": 46,
+                "date": "2025-08-11",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 34,
+                "pos": 47,
+                "date": "2025-08-18",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 35,
+                "pos": 48,
+                "date": "2025-08-25",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 36,
+                "pos": 49,
+                "date": "2025-09-01",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 37,
+                "pos": 50,
+                "date": "2025-09-08",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 38,
+                "pos": 51,
+                "date": "2025-09-15",
+                "value_raw": 0,
+                "value_smooth": 0.234
+              },
+              {
+                "week": 39,
+                "pos": 52,
+                "date": "2025-09-22",
+                "value_raw": 0.702,
+                "value_smooth": 0.351
+              }
+            ]
+          },
+          {
+            "season_start_year": 2025,
+            "season_label": "2025-2026",
+            "wave_status": "complete",
+            "observed_until": "2026-06-15",
+            "n_observed_weeks": 38,
+            "peak_week": 51,
+            "peak_date": "2025-12-15",
+            "peak_value": 34.778,
+            "half_height_value": 17.389,
+            "left_half_cross_pos": 8.566,
+            "right_half_cross_pos": 13.773,
+            "fwhm_weeks": 5.207,
+            "fwhm_lower_bound_weeks": null,
+            "left_span_weeks": 2.434,
+            "right_span_weeks": 2.773,
+            "asymmetry_ratio": 1.139,
+            "season_burden": 247.87,
+            "secondary_peak_ratio": 0.25,
+            "plot_points": [
+              {
+                "week": 40,
+                "pos": 0,
+                "date": "2025-09-29",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 41,
+                "pos": 1,
+                "date": "2025-10-06",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 42,
+                "pos": 2,
+                "date": "2025-10-13",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 43,
+                "pos": 3,
+                "date": "2025-10-20",
+                "value_raw": 0,
+                "value_smooth": 0
+              },
+              {
+                "week": 44,
+                "pos": 4,
+                "date": "2025-10-27",
+                "value_raw": 0,
+                "value_smooth": 0.114
+              },
+              {
+                "week": 45,
+                "pos": 5,
+                "date": "2025-11-03",
+                "value_raw": 0.341,
+                "value_smooth": 1.599
+              },
+              {
+                "week": 46,
+                "pos": 6,
+                "date": "2025-11-10",
+                "value_raw": 4.455,
+                "value_smooth": 2.711
+              },
+              {
+                "week": 47,
+                "pos": 7,
+                "date": "2025-11-17",
+                "value_raw": 3.337,
+                "value_smooth": 6.319
+              },
+              {
+                "week": 48,
+                "pos": 8,
+                "date": "2025-11-24",
+                "value_raw": 11.163,
+                "value_smooth": 12.231
+              },
+              {
+                "week": 49,
+                "pos": 9,
+                "date": "2025-12-01",
+                "value_raw": 22.193,
+                "value_smooth": 21.345
+              },
+              {
+                "week": 50,
+                "pos": 10,
+                "date": "2025-12-08",
+                "value_raw": 30.68,
+                "value_smooth": 32.339
+              },
+              {
+                "week": 51,
+                "pos": 11,
+                "date": "2025-12-15",
+                "value_raw": 44.143,
+                "value_smooth": 34.778
+              },
+              {
+                "week": 52,
+                "pos": 12,
+                "date": "2025-12-22",
+                "value_raw": 29.512,
+                "value_smooth": 29.713
+              },
+              {
+                "week": 1,
+                "pos": 14,
+                "date": "2025-12-29",
+                "value_raw": 15.485,
+                "value_smooth": 15.814
+              },
+              {
+                "week": 2,
+                "pos": 15,
+                "date": "2026-01-05",
+                "value_raw": 2.446,
+                "value_smooth": 10.635
+              },
+              {
+                "week": 3,
+                "pos": 16,
+                "date": "2026-01-12",
+                "value_raw": 13.975,
+                "value_smooth": 8.17
+              },
+              {
+                "week": 4,
+                "pos": 17,
+                "date": "2026-01-19",
+                "value_raw": 8.089,
+                "value_smooth": 8.678
+              },
+              {
+                "week": 5,
+                "pos": 18,
+                "date": "2026-01-26",
+                "value_raw": 3.971,
+                "value_smooth": 5.491
+              },
+              {
+                "week": 6,
+                "pos": 19,
+                "date": "2026-02-02",
+                "value_raw": 4.414,
+                "value_smooth": 5.191
+              },
+              {
+                "week": 7,
+                "pos": 20,
+                "date": "2026-02-09",
+                "value_raw": 7.187,
+                "value_smooth": 6.708
+              },
+              {
+                "week": 8,
+                "pos": 21,
+                "date": "2026-02-16",
+                "value_raw": 8.523,
+                "value_smooth": 6.847
+              },
+              {
+                "week": 9,
+                "pos": 22,
+                "date": "2026-02-23",
+                "value_raw": 4.831,
+                "value_smooth": 6.406
+              },
+              {
+                "week": 10,
+                "pos": 23,
+                "date": "2026-03-02",
+                "value_raw": 5.863,
+                "value_smooth": 4.931
+              },
+              {
+                "week": 11,
+                "pos": 24,
+                "date": "2026-03-09",
+                "value_raw": 4.1,
+                "value_smooth": 4.515
+              },
+              {
+                "week": 12,
+                "pos": 25,
+                "date": "2026-03-16",
+                "value_raw": 3.582,
+                "value_smooth": 3.202
+              },
+              {
+                "week": 13,
+                "pos": 26,
+                "date": "2026-03-23",
+                "value_raw": 1.924,
+                "value_smooth": 2.45
+              },
+              {
+                "week": 14,
+                "pos": 27,
+                "date": "2026-03-30",
+                "value_raw": 1.845,
+                "value_smooth": 2.072
+              },
+              {
+                "week": 15,
+                "pos": 28,
+                "date": "2026-04-06",
+                "value_raw": 2.446,
+                "value_smooth": 2.31
+              },
+              {
+                "week": 16,
+                "pos": 29,
+                "date": "2026-04-13",
+                "value_raw": 2.639,
+                "value_smooth": 2.198
+              },
+              {
+                "week": 17,
+                "pos": 30,
+                "date": "2026-04-20",
+                "value_raw": 1.51,
+                "value_smooth": 3.485
+              },
+              {
+                "week": 18,
+                "pos": 31,
+                "date": "2026-04-27",
+                "value_raw": 6.306,
+                "value_smooth": 2.605
+              },
+              {
+                "week": 19,
+                "pos": 32,
+                "date": "2026-05-04",
+                "value_raw": 0,
+                "value_smooth": 2.557
+              },
+              {
+                "week": 20,
+                "pos": 33,
+                "date": "2026-05-11",
+                "value_raw": 1.365,
+                "value_smooth": 0.585
+              },
+              {
+                "week": 21,
+                "pos": 34,
+                "date": "2026-05-18",
+                "value_raw": 0.391,
+                "value_smooth": 0.714
+              },
+              {
+                "week": 22,
+                "pos": 35,
+                "date": "2026-05-25",
+                "value_raw": 0.386,
+                "value_smooth": 0.259
+              },
+              {
+                "week": 23,
+                "pos": 36,
+                "date": "2026-06-01",
+                "value_raw": 0,
+                "value_smooth": 0.216
+              },
+              {
+                "week": 24,
+                "pos": 37,
+                "date": "2026-06-08",
+                "value_raw": 0.263,
+                "value_smooth": 0.257
+              },
+              {
+                "week": 25,
+                "pos": 38,
+                "date": "2026-06-15",
+                "value_raw": 0.507,
+                "value_smooth": 0.385
+              }
+            ]
+          }
+        ],
+        "peak_ranking": [
+          {
+            "season_label": "2023-2024",
+            "peak_value": 40.624
+          },
+          {
+            "season_label": "2025-2026",
+            "peak_value": 34.778
+          },
+          {
+            "season_label": "2024-2025",
+            "peak_value": 26.634
+          }
+        ],
+        "width_ranking_complete": [
+          {
+            "season_label": "2024-2025",
+            "fwhm_weeks": 9.58
+          },
+          {
+            "season_label": "2025-2026",
+            "fwhm_weeks": 5.207
+          },
+          {
+            "season_label": "2023-2024",
+            "fwhm_weeks": 5.123
+          }
+        ],
+        "latest_vs_previous": [
+          {
+            "latest_season": "2025-2026",
+            "previous_season": "2023-2024",
+            "peak_diff_abs": -5.846,
+            "peak_diff_pct": -14.4,
+            "peak_week_diff": 0,
+            "season_burden_diff_pct": 9.6,
+            "width_diff_weeks": 0.084,
+            "latest_width_censored": false
+          },
+          {
+            "latest_season": "2025-2026",
+            "previous_season": "2024-2025",
+            "peak_diff_abs": 8.144,
+            "peak_diff_pct": 30.6,
+            "peak_week_diff": 39,
+            "season_burden_diff_pct": -11.9,
+            "width_diff_weeks": -4.373,
+            "latest_width_censored": false
+          }
+        ],
+        "allowed_claims": [
+          "peak height comparison",
+          "peak timing comparison",
+          "FWHM-like width comparison when complete",
+          "right-censored width caveat for incomplete latest season",
+          "seasonal burden comparison"
+        ],
+        "forbidden_claims": [
+          "causal explanations absent from the dataset",
+          "formal epidemic threshold declarations",
+          "age-group conclusions without age-group data"
+        ]
+      },
+      "age_group_patterns": {
+        "season": "2025-2026",
+        "available_seasons": [
+          "2010-2011",
+          "2011-2012",
+          "2012-2013",
+          "2013-2014",
+          "2014-2015",
+          "2015-2016",
+          "2016-2017",
+          "2017-2018",
+          "2018-2019",
+          "2019-2020",
+          "2020-2021",
+          "2021-2022",
+          "2022-2023",
+          "2023-2024",
+          "2024-2025",
+          "2025-2026"
+        ],
+        "age_group_summary": [
+          {
+            "season": "2025-2026",
+            "age_group": "3-6",
+            "weeks": 38,
+            "total_cases": 141128,
+            "mean_inc_per_10k": 180.21878894015856,
+            "median_inc_per_10k": 187.8909339712826,
+            "seasonal_burden_inc_week": 6848.3139797260255,
+            "peak_inc_per_10k": 391.2129932015703,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 14,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 1,
+            "rank_by_peak": 1
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "0-2",
+            "weeks": 38,
+            "total_cases": 92071,
+            "mean_inc_per_10k": 167.82602133611175,
+            "median_inc_per_10k": 181.33835742635293,
+            "seasonal_burden_inc_week": 6377.388810772247,
+            "peak_inc_per_10k": 313.98272506251254,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 24,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 2,
+            "rank_by_peak": 3
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "7-14",
+            "weeks": 38,
+            "total_cases": 190729,
+            "mean_inc_per_10k": 110.19089417378119,
+            "median_inc_per_10k": 100.56004513731095,
+            "seasonal_burden_inc_week": 4187.253978603685,
+            "peak_inc_per_10k": 340.7252266195974,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 4,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 3,
+            "rank_by_peak": 2
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "15-64",
+            "weeks": 38,
+            "total_cases": 450871,
+            "mean_inc_per_10k": 31.426712131662587,
+            "median_inc_per_10k": 32.05835369951045,
+            "seasonal_burden_inc_week": 1194.2150610031783,
+            "peak_inc_per_10k": 55.916379968634274,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 24,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 4,
+            "rank_by_peak": 4
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "65+",
+            "weeks": 38,
+            "total_cases": 58940,
+            "mean_inc_per_10k": 15.260903713743765,
+            "median_inc_per_10k": 14.842225713996164,
+            "seasonal_burden_inc_week": 579.9143411222631,
+            "peak_inc_per_10k": 33.1871576621207,
+            "peak_date": "2026-01-12",
+            "peak_iso_week": 3,
+            "peak_width_weeks_at_fraction": 16,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 5,
+            "rank_by_peak": 5
+          }
+        ]
+      },
+      "limitations": [
+        "This is a structured evidence packet, not a finished bulletin.",
+        "Narrative comments must be generated outside the MCP server from the supplied evidence only.",
+        "Influenza DB authentication is server-side and not included in metadata.",
+        "Wave comparison describes geometry of the observed incidence curve; it does not establish causal drivers.",
+        "Age-group conclusions are limited to age-specific incidence/cases available in the DB response.",
+        "Weather observations are included as contextual evidence only; the compact BR calibration does not use weather covariates as model inputs.",
+        "The BR forecast interval is derived from calibration parameter samples and is not a split-conformal interval.",
+        "Alpha and beta are fitted model parameters, not directly observed biological quantities.",
+        "No separately estimated gamma parameter is available in this compact BR implementation; infectiousness duration is represented by a fixed kernel."
+      ],
+      "mechanistic_model_interpretation": {
+        "status": "included",
+        "method": "calibrated_compact_baroyan_rvachev_style_renewal_model",
+        "configuration": {
+          "model_family": "compact_baroyan_rvachev_style_renewal_model",
+          "forecast_type": "total",
+          "method": "mcmc",
+          "forecast_duration_weeks": 4,
+          "calibration_window_weeks": 26,
+          "posterior_samples": 200,
+          "random_state": 42
+        },
+        "parameter_summary": {
+          "optimizer_best_fit": {
+            "alpha_total": 0.2996277294278028,
+            "beta_total": 0.99
+          },
+          "optimizer_parameter_bounds": {
+            "alpha_total": {
+              "at_lower_bound": false,
+              "at_upper_bound": false
+            },
+            "beta_total": {
+              "at_lower_bound": false,
+              "at_upper_bound": true
+            }
+          },
+          "best_fit": {
+            "alpha_total": 0.2996277294278028,
+            "beta_total": 0.99
+          },
+          "uncertainty_samples": {
+            "sample_kind": "conditional_gaussian_log1p_pseudo_posterior",
+            "reference_estimate": "optimizer_best_fit",
+            "parameter_quantiles": {
+              "alpha_total": {
+                "p10": 0.295936181292958,
+                "p50": 0.3006439932214206,
+                "p90": 0.3067824087415992
+              },
+              "beta_total": {
+                "p10": 0.9899999870305957,
+                "p50": 0.9899999981217229,
+                "p90": 0.9899999991501587
+              }
+            },
+            "calibration_loss_quantiles": {
+              "p10": 3.083576710879983,
+              "p50": 3.1234474276555755,
+              "p90": 3.424413078649393
+            },
+            "sample_count": 200,
+            "optimizer_reference_row_in_artifact": true
+          }
+        },
+        "parameter_meanings": {
+          "alpha_total": {
+            "label": "Initial susceptible fraction",
+            "interpretation": "Estimated fraction of the aggregate population treated as susceptible at the start of the calibration window. It is a model initialization parameter, not a directly observed immune-status measure."
+          },
+          "beta_total": {
+            "label": "Aggregate transmission/contact coefficient",
+            "interpretation": "Fitted coefficient governing how infectious pressure is converted into new infections in the aggregate renewal recurrence. It is not a directly measured contact rate or reproduction number."
+          }
+        },
+        "gamma": {
+          "status": "not_estimated",
+          "reason": "This compact BR implementation uses a fixed infectivity kernel rather than a separately estimated recovery/removal parameter gamma."
+        },
+        "calibration_diagnostics": {
+          "calibration_backend": "random_walk_metropolis_conditional_pseudo_posterior",
+          "objective": "mean_squared_log1p_error_on_weekly_estimated_influenza_cases",
+          "r2_observed_vs_fitted": 0.2496208326819256,
+          "mae_cases": 1792.4159946084217,
+          "rmse_cases": 3042.0030998092075,
+          "optimizer_best_fit_loss": 3.08186667801238,
+          "uncertainty_sample_loss_quantiles": {
+            "p10": 3.083576710879983,
+            "p50": 3.1234474276555755,
+            "p90": 3.424413078649393
+          },
+          "uncertainty_sample_loss_median": 3.1234474276555755,
+          "uncertainty_sample_count": 200,
+          "optimizer_reference_row_in_parameter_samples": true,
+          "forecast_interval_method": "parameter_sample_quantiles",
+          "sample_kind": "conditional_gaussian_log1p_pseudo_posterior",
+          "observation_error_model": "gaussian_log1p_residuals_with_plugin_sigma",
+          "observation_log1p_sigma": 1.827207952363408,
+          "retained_draws_before_thinning": 500,
+          "selected_draws": 200,
+          "mcmc_acceptance_rate_total": 0.265,
+          "mcmc_acceptance_rate_post_burn": 0.278,
+          "final_proposal_scale_unconstrained": 0.11250000000000002,
+          "reference_estimate": "optimizer_best_fit",
+          "observed_weeks": 26,
+          "optimizer_parameter_bounds": {
+            "alpha_total": {
+              "at_lower_bound": false,
+              "at_upper_bound": false
+            },
+            "beta_total": {
+              "at_lower_bound": false,
+              "at_upper_bound": true
+            }
+          },
+          "optimizer_at_any_parameter_bound": true
+        },
+        "limitations": [
+          "This caller-selected mechanistic forecast does not inherit the validation or split-conformal uncertainty guarantees of the default GBDT workflow.",
+          "Alpha and beta are fitted model parameters; they should not be interpreted as directly observed biological quantities.",
+          "Age-mode influenza cases are allocated from estimated total influenza cases using the observed ARI age composition.",
+          "The displayed forecast interval reflects quantiles across the reported calibration sample set, not the GBDT conformal interval.",
+          "For MCMC, uncertainty draws target a conditional Gaussian log1p-residual pseudo-posterior with a plug-in residual scale; they are conditional model-based uncertainty, not a full external validation guarantee.",
+          "At least one optimizer parameter reached a configured calibration bound; this indicates a constrained or weakly identified fit and should be interpreted cautiously."
+        ]
+      }
+    },
+    "context_summary": {
+      "schema_version": "epid_forecasting.bulletin_context.v3",
+      "purpose": "structured_evidence_for_external_bulletin_writing",
+      "forecast_engine": "br",
+      "latest_week": {
+        "date": "2026-06-15",
+        "iso_year": 2026,
+        "iso_week": 25,
+        "inc_per_10k": 0.507
+      },
+      "weather_status": "included",
+      "age_group_season": "2025-2026",
+      "wave_seasons": [
+        "2023-2024",
+        "2024-2025",
+        "2025-2026"
+      ],
+      "forecast_status": "included",
+      "mechanistic_parameters_status": "included",
+      "gamma_status": "not_estimated"
+    },
+    "result_delivery": {
+      "mode": "inline_bulletin_context_plus_s3_artifacts",
+      "storage": "s3_compatible",
+      "authentication": "server_side_s3_influenza_db_and_weather_credentials",
+      "client_download_access": "temporary_presigned_urls"
+    },
+    "run_id": "c8388601-b8b9-4641-989d-a8d487c4486c",
+    "storage_prefix": "1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c",
+    "download_access": "presigned_urls",
+    "presigned_url_expiration_seconds": 3600,
+    "artifacts": {
+      "bulletin_context_json": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/bulletin_context.json",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/bulletin_context.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=bc0f4366c91533ebe0dd22a09eb9fc375d02b116643574e602df01e0ef5679d5",
+        "content_type": "application/json"
+      },
+      "bulletin_context_markdown": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/bulletin_context.md",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/bulletin_context.md?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=5bc72681cd7f66e3c9802741c7cd46de824dfa1e162d4620fdb608b0015d1b80",
+        "content_type": "text/markdown"
+      },
+      "weekly": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/weekly.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/weekly.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=13e6843b1de8d6915061e564c30bbbdd056687665804ea7e7da93ca7e0594b71",
+        "content_type": "text/csv"
+      },
+      "age_groups": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/age_groups.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/age_groups.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1709ea665a9202cc64cca378d759263b0010b4151efb5b5d05786302ce937e22",
+        "content_type": "text/csv"
+      },
+      "weather_hourly": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/weather_hourly.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/weather_hourly.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=6308b9b2b892ff03384352bea029d443d3a0f60c1b83bf0ce08be5836fefc284",
+        "content_type": "text/csv"
+      },
+      "weather_weekly": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/weather_weekly.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/weather_weekly.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=e44c6c2972866c3cfa89d7a5cec05277b1608293c22398bedf828886ee8bdfda",
+        "content_type": "text/csv"
+      },
+      "br_trajectory": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_trajectory.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_trajectory.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1c87238a2fceb9e1df29d04d3c94cd7ee6f7d9377bab2ec7363e2ba316c43226",
+        "content_type": "text/csv"
+      },
+      "br_parameter_samples": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_parameter_samples.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_parameter_samples.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d43538c600538e0220a92eb06dcc1e6123a081a42a47901032e0b74f9c7202d2",
+        "content_type": "text/csv"
+      },
+      "br_summary": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_summary.json",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_summary.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a8b3f29f542425ba724d2778f95d0ddbeb255a588e38a5d805dc1015b1838477",
+        "content_type": "application/json"
+      },
+      "br_forecast_ru_png": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_forecast_ru.png",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_forecast_ru.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a4c89a599e1346038f98ee0162de6149978004a54d7434330d19f1fadfca401b",
+        "content_type": "image/png"
+      },
+      "br_forecast_ru_pdf": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_forecast_ru.pdf",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_forecast_ru.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=071fcc66bb65b7c6f9b725d249c315ddf63499f09f541942e7354d6bf92b6ce7",
+        "content_type": "application/pdf"
+      },
+      "br_alpha_distribution_png": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_alpha_distribution.png",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_alpha_distribution.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8c33b08a8c17323bab95bd2350428f96e52c7fb2c448ba8cda702152d6e43d15",
+        "content_type": "image/png"
+      },
+      "br_alpha_distribution_pdf": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_alpha_distribution.pdf",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_alpha_distribution.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=254d14e8a009debe1f9d9c3dc504267db65437234fe479eb0bb6125b6e59d466",
+        "content_type": "application/pdf"
+      },
+      "br_beta_distribution_png": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_beta_distribution.png",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_beta_distribution.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a0ff10c686870f9944e6feb65cb961569028898e08a65cf6d976be533ad49357",
+        "content_type": "image/png"
+      },
+      "br_beta_distribution_pdf": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_beta_distribution.pdf",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/c8388601-b8b9-4641-989d-a8d487c4486c/br_beta_distribution.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T102126Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3d59c193eb2ed469e67a225397aee035b6f76196ef75516969cb8e9bd0893e0e",
+        "content_type": "application/pdf"
+      }
+    }
+  }
+}

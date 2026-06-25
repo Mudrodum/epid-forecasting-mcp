@@ -1,0 +1,37 @@
+{
+  "answer": "✅ Successfully generated 4-week influenza forecast for spb using mcmc method.\n☁️ Uploaded to S3: 6 files\n🔗 URLs valid for 1 hour",
+  "metadata": {
+    "city": "spb",
+    "method": "mcmc",
+    "forecast_type": "total",
+    "forecast_duration_weeks": 4,
+    "status": "completed",
+    "s3": {
+      "urls": {
+        "ru": {
+          "png": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260623_143422/forecast_ru_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T113422Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=84596db232f9df4579834fdfc75265ac7385b0ef1442dcbf58d83e1ae341bece",
+          "pdf": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260623_143422/forecast_ru_pdf_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T113422Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ee529349dd79a338b78006bd545700cb5946585912d8994d0f1e070ea80dcd4b",
+          "small": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260623_143422/forecast_ru_small_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T113422Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=255504294ce31f89f25ed48a50d78349d94d6301a0f91929ac497bce74040615"
+        },
+        "en": {
+          "png": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260623_143422/forecast_en_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T113422Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=be97afe441ee31d5db0fe39ba008f26f018b649595cc5250846c1a34524a3d88",
+          "pdf": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260623_143422/forecast_en_pdf_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T113422Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=dba9686080ef0774ad45ad07a4340d59967c92e668b3f0eb7f0c525774867d35",
+          "small": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260623_143422/forecast_en_small_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260623%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260623T113423Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3292e95da9ccd4988b3d346e8c380a536f2495575f1dee06154077ae0e6297aa"
+        }
+      },
+      "paths": {
+        "ru": {
+          "png": "forecasts/spb/mcmc/total/3/20260623_143422/forecast_ru_png_3.png",
+          "pdf": "forecasts/spb/mcmc/total/3/20260623_143422/forecast_ru_pdf_3.png",
+          "small": "forecasts/spb/mcmc/total/3/20260623_143422/forecast_ru_small_3.png"
+        },
+        "en": {
+          "png": "forecasts/spb/mcmc/total/3/20260623_143422/forecast_en_png_3.png",
+          "pdf": "forecasts/spb/mcmc/total/3/20260623_143422/forecast_en_pdf_3.png",
+          "small": "forecasts/spb/mcmc/total/3/20260623_143422/forecast_en_small_3.png"
+        }
+      },
+      "urls_valid_for_seconds": 3600
+    }
+  }
+}
