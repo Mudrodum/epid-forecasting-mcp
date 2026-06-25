@@ -1,0 +1,345 @@
+{
+  "answer": "Prepared and returned an inline influenza bulletin evidence packet using the compact BR mechanistic forecast engine for Санкт-Петербург; alpha/beta evidence and full artifacts were uploaded to S3.",
+  "metadata": {
+    "city": {
+      "slug": "spb",
+      "api_id": 38,
+      "name_ru": "Санкт-Петербург"
+    },
+    "request": {
+      "begin_year": 2025,
+      "begin_week": 40,
+      "end_year": 2026,
+      "end_week": 52
+    },
+    "date_range": {
+      "start": "2025-09-29",
+      "end": "2026-06-15"
+    },
+    "source_url": "https://db.influenza.spb.ru/scripts/report/rmancgi.exe?reportname=get_csv&id=aripcr&byear=2025&bweek=40&eyear=2026&eweek=52&district=38&auth=%3Credacted%3E",
+    "bulletin_context": {
+      "schema_version": "epid_forecasting.bulletin_context.v3",
+      "prepared_at_utc": "2026-06-24T16:01:14+00:00",
+      "purpose": "structured_evidence_for_external_bulletin_writing",
+      "city": {
+        "slug": "spb",
+        "api_id": 38,
+        "name_ru": "Санкт-Петербург"
+      },
+      "request": {
+        "begin_year": 2025,
+        "begin_week": 40,
+        "end_year": 2026,
+        "end_week": 52
+      },
+      "date_range": {
+        "start": "2025-09-29",
+        "end": "2026-06-15"
+      },
+      "source": {
+        "influenza_db_url": "https://db.influenza.spb.ru/scripts/report/rmancgi.exe?reportname=get_csv&id=aripcr&byear=2025&bweek=40&eyear=2026&eweek=52&district=38&auth=%3Credacted%3E",
+        "token_policy": "redacted_server_side_only"
+      },
+      "parameters": {
+        "season": "2025-2026",
+        "forecast_engine": "br",
+        "include_weather": true,
+        "include_forecast": true,
+        "include_shap_requested": true,
+        "include_shap_effective": false,
+        "origin_date": null,
+        "trend_window_weeks": 4,
+        "peak_width_fraction": 0.5,
+        "season_start_week": 40,
+        "smooth_window": 3,
+        "n_last_seasons": 3,
+        "shap_max_test_samples": 64,
+        "shap_background_size": 128,
+        "br_forecast_type": "total",
+        "br_method": "mcmc",
+        "br_forecast_duration_weeks": 4,
+        "br_calibration_window_weeks": 26
+      },
+      "forecast_model": {
+        "engine": "br",
+        "label": "Compact Baroyan-Rvachev-style mechanistic renewal model",
+        "model_family": "compact_baroyan_rvachev_style_renewal_model",
+        "forecast_type": null,
+        "calibration_method": null,
+        "explanation_section": "mechanistic_model_interpretation"
+      },
+      "writing_constraints": [
+        "Use only the quantitative evidence in this context and referenced artifacts.",
+        "Do not infer causal explanations from correlations, SHAP attributions, or curve geometry.",
+        "Do not declare formal epidemic thresholds unless a threshold is explicitly present in evidence.",
+        "Keep uncertainty and data-coverage caveats visible.",
+        "For the BR engine, do not describe alpha or beta as directly measured biological constants."
+      ],
+      "suggested_report_sections": [
+        "current_situation",
+        "short_term_forecast",
+        "mechanistic_model_interpretation",
+        "epidemic_wave_comparison",
+        "age_group_patterns",
+        "limitations"
+      ],
+      "current_situation": {
+        "latest_week": {
+          "date": "2026-06-15",
+          "iso_year": 2026,
+          "iso_week": 25,
+          "inc_per_10k": 0.507
+        },
+        "previous_week": {
+          "date": "2026-06-08",
+          "iso_year": 2026,
+          "iso_week": 24,
+          "inc_per_10k": 0.263
+        },
+        "week_over_week_change_abs": 0.245,
+        "week_over_week_change_pct": 93.2,
+        "recent_window_weeks": 4,
+        "recent_mean_inc_per_10k": 0.289,
+        "previous_window_mean_inc_per_10k": 2.016,
+        "recent_vs_previous_window_pct": -85.7
+      },
+      "weather_source": {
+        "status": "included",
+        "source": "Open-Meteo Archive API",
+        "source_url": "https://archive-api.open-meteo.com/v1/archive",
+        "location": {
+          "city": "spb",
+          "query": "Saint Petersburg",
+          "latitude": 59.9311,
+          "longitude": 30.3609,
+          "timezone": "Europe/Moscow",
+          "source": "preset"
+        },
+        "request": {
+          "city": "spb",
+          "start_date": "2025-09-29",
+          "end_date": "2026-06-21",
+          "latitude": null,
+          "longitude": null,
+          "timezone": null
+        },
+        "hourly_rows": 6384,
+        "weekly_rows": 38,
+        "date_range": {
+          "start": "2025-09-29",
+          "end": "2026-06-15"
+        }
+      },
+      "short_term_forecast": {
+        "status": "included",
+        "forecast_engine": "br",
+        "forecast_origin_date": null,
+        "target_variable": "estimated influenza cases and incidence per 10,000",
+        "forecast_horizon_weeks": null,
+        "forecast": [],
+        "uncertainty_bounds": {
+          "method": "parameter_sample_quantiles",
+          "sample_kind": "calibration_parameter_samples",
+          "lower_column": "pi80_lower_inc_per_10k",
+          "upper_column": "pi80_upper_inc_per_10k",
+          "interpretation": "The 80% interval reflects quantiles across objective-based calibration parameter samples; it is not a split-conformal prediction interval or a Bayesian posterior interval."
+        }
+      },
+      "epidemic_wave_comparison": {
+        "season_labels": [],
+        "latest_wave_status": ""
+      },
+      "age_group_patterns": {
+        "season": "2025-2026",
+        "available_seasons": [
+          "2025-2026"
+        ],
+        "age_group_summary": [
+          {
+            "season": "2025-2026",
+            "age_group": "3-6",
+            "weeks": 38,
+            "total_cases": 141128,
+            "mean_inc_per_10k": 180.21878894015856,
+            "median_inc_per_10k": 187.8909339712826,
+            "seasonal_burden_inc_week": 6848.3139797260255,
+            "peak_inc_per_10k": 391.2129932015703,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 14,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 1,
+            "rank_by_peak": 1
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "0-2",
+            "weeks": 38,
+            "total_cases": 92071,
+            "mean_inc_per_10k": 167.82602133611175,
+            "median_inc_per_10k": 181.33835742635293,
+            "seasonal_burden_inc_week": 6377.388810772247,
+            "peak_inc_per_10k": 313.98272506251254,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 24,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 2,
+            "rank_by_peak": 3
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "7-14",
+            "weeks": 38,
+            "total_cases": 190729,
+            "mean_inc_per_10k": 110.19089417378119,
+            "median_inc_per_10k": 100.56004513731095,
+            "seasonal_burden_inc_week": 4187.253978603685,
+            "peak_inc_per_10k": 340.7252266195974,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 4,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 3,
+            "rank_by_peak": 2
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "15-64",
+            "weeks": 38,
+            "total_cases": 450871,
+            "mean_inc_per_10k": 31.426712131662587,
+            "median_inc_per_10k": 32.05835369951045,
+            "seasonal_burden_inc_week": 1194.2150610031783,
+            "peak_inc_per_10k": 55.916379968634274,
+            "peak_date": "2025-12-15",
+            "peak_iso_week": 51,
+            "peak_width_weeks_at_fraction": 24,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 4,
+            "rank_by_peak": 4
+          },
+          {
+            "season": "2025-2026",
+            "age_group": "65+",
+            "weeks": 38,
+            "total_cases": 58940,
+            "mean_inc_per_10k": 15.260903713743765,
+            "median_inc_per_10k": 14.842225713996164,
+            "seasonal_burden_inc_week": 579.9143411222631,
+            "peak_inc_per_10k": 33.1871576621207,
+            "peak_date": "2026-01-12",
+            "peak_iso_week": 3,
+            "peak_width_weeks_at_fraction": 16,
+            "peak_width_fraction": 0.5,
+            "rank_by_seasonal_burden": 5,
+            "rank_by_peak": 5
+          }
+        ]
+      },
+      "limitations": [
+        "This is a structured evidence packet, not a finished bulletin.",
+        "Narrative comments must be generated outside the MCP server from the supplied evidence only.",
+        "Influenza DB authentication is server-side and not included in metadata.",
+        "Wave comparison describes geometry of the observed incidence curve; it does not establish causal drivers.",
+        "Age-group conclusions are limited to age-specific incidence/cases available in the DB response.",
+        "Weather observations are included as contextual evidence only; the compact BR calibration does not use weather covariates as model inputs.",
+        "The BR forecast interval is derived from calibration parameter samples and is not a split-conformal interval.",
+        "Alpha and beta are fitted model parameters, not directly observed biological quantities.",
+        "No separately estimated gamma parameter is available in this compact BR implementation; infectiousness duration is represented by a fixed kernel."
+      ],
+      "mechanistic_model_interpretation": {
+        "status": "included",
+        "method": "calibrated_compact_baroyan_rvachev_style_renewal_model",
+        "configuration": {},
+        "parameter_summary": {},
+        "parameter_meanings": {},
+        "gamma": {
+          "status": "not_estimated",
+          "reason": "This compact BR implementation uses a fixed infectivity kernel rather than a separately estimated recovery/removal parameter gamma."
+        },
+        "calibration_diagnostics": {},
+        "limitations": []
+      }
+    },
+    "context_summary": {
+      "schema_version": "epid_forecasting.bulletin_context.v3",
+      "purpose": "structured_evidence_for_external_bulletin_writing",
+      "forecast_engine": "br",
+      "latest_week": {
+        "date": "2026-06-15",
+        "iso_year": 2026,
+        "iso_week": 25,
+        "inc_per_10k": 0.507
+      },
+      "weather_status": "included",
+      "age_group_season": "2025-2026",
+      "wave_seasons": [],
+      "forecast_status": "included",
+      "mechanistic_parameters_status": "included",
+      "gamma_status": "not_estimated"
+    },
+    "result_delivery": {
+      "mode": "inline_bulletin_context_plus_s3_artifacts",
+      "storage": "s3_compatible",
+      "authentication": "server_side_s3_influenza_db_and_weather_credentials",
+      "client_download_access": "temporary_presigned_urls"
+    },
+    "run_id": "cefbe07d-040c-4c42-a468-39c7b092e986",
+    "storage_prefix": "1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986",
+    "download_access": "presigned_urls",
+    "presigned_url_expiration_seconds": 3600,
+    "artifacts": {
+      "bulletin_context_json": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/bulletin_context.json",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/bulletin_context.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ffa9d38f60e4ee4b53a6af93aebaf060a36aaa32faf078b1da06e58cfce60059",
+        "content_type": "application/json"
+      },
+      "bulletin_context_markdown": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/bulletin_context.md",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/bulletin_context.md?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cf08c3cc4271c12fd4cd642a8316dbce4d7de7ba8402bae11d11e2a7ab95d1b0",
+        "content_type": "text/markdown"
+      },
+      "weekly": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/weekly.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/weekly.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3456e292aa08d974e560fcdcd3009cc3046c239822455f6dbe5c501b17700b2f",
+        "content_type": "text/csv"
+      },
+      "age_groups": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/age_groups.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/age_groups.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=818e7fb42d62ff2db7cf13779944d1748f1fe42a73ec947434b75d1f687afb36",
+        "content_type": "text/csv"
+      },
+      "weather_hourly": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/weather_hourly.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/weather_hourly.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3aaef0b75351c7a462510bc07b69327e6c274ca2abde3fd22b669441fd0d147b",
+        "content_type": "text/csv"
+      },
+      "weather_weekly": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/weather_weekly.csv",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/weather_weekly.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7f4290416ef572919b51c72d9abb97fd60df009bb8669967625687e6c9888552",
+        "content_type": "text/csv"
+      },
+      "br_forecast_ru_png": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_ru.png",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_ru.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=81f3649e43af6e1bf5cb3450657867cb457fa079c55932576c6f00ff75769c43",
+        "content_type": "image/png"
+      },
+      "br_forecast_ru_pdf": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_ru.pdf",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_ru.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a5e6ffe250fe48e9f41d24e9d41e56347d7af88eb8c42bdf2220ed9a003fff83",
+        "content_type": "application/pdf"
+      },
+      "br_forecast_en_png": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_en.png",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_en.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a31879aa62c41aae7305513ed6f7e8a39e0f54066155981745f3e8e1f4e0669f",
+        "content_type": "image/png"
+      },
+      "br_forecast_en_pdf": {
+        "s3_uri": "s3://influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_en.pdf",
+        "download_url": "http://localhost:9000/influenza-forecasts/1/5/epid_forecasting/bulletin_context/cefbe07d-040c-4c42-a468-39c7b092e986/br_forecast_en.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T160115Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=bd95e76fcf55af4c4c445946ad9fdcacbe9b80362106ad9e9417cba4625c3bb8",
+        "content_type": "application/pdf"
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "answer": "✅ Successfully generated 4-week influenza forecast for spb using mcmc method.\n☁️ Uploaded to S3: 6 files\n🔗 URLs valid for 1 hour",
+  "metadata": {
+    "city": {
+      "slug": "spb",
+      "api_id": 38,
+      "name_ru": "Санкт-Петербург"
+    },
+    "request": {
+      "begin_year": 2025,
+      "begin_week": 40,
+      "end_year": 2026,
+      "end_week": 52
+    },
+    "source_url": "https://db.influenza.spb.ru/scripts/report/rmancgi.exe?reportname=get_csv&id=aripcr&byear=2025&bweek=40&eyear=2026&eweek=52&district=38&auth=%3Credacted%3E",
+    "configuration": {
+      "model_family": "baroyan_rvachev_model",
+      "forecast_type": "total",
+      "method": "mcmc",
+      "epsilon": 1000,
+      "forecast_duration_weeks": 4,
+      "calibration_window_weeks": null,
+      "posterior_samples": null
+    },
+    "s3": {
+      "urls": {
+        "ru": {
+          "png": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260624_120424/forecast_ru_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090424Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=df68dbb28289e1da60de5a077dd60d535248a44ecdedf353068101ea90f6085e",
+          "pdf": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260624_120424/forecast_ru_pdf_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090424Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87b286b18b2ed16b4a8bb4b4f4a2101b64f48dff5be3aca5be9edcebb4899fc3",
+          "small": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260624_120424/forecast_ru_small_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090424Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=4f87a7de32d9ee7b9b6b262cfe2f478a228f9e792449d307075c4e7602d7a9b3"
+        },
+        "en": {
+          "png": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260624_120424/forecast_en_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090425Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cf967f17cc10a95d1b2dfb49155e87000383247232c99486f8c4bb03cb32931d",
+          "pdf": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260624_120424/forecast_en_pdf_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090425Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=540048ed4cc13a79179269b84b7da7210151adc7b393505ce0223a8c36ac8d96",
+          "small": "http://localhost:9000/influenza-forecasts/forecasts/spb/mcmc/total/3/20260624_120424/forecast_en_small_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090425Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=c6a3311fe77ec0b49bf98e0a71d80d4fa447a0b8d0ac436a0a08c5dde786e7bd"
+        }
+      },
+      "paths": {
+        "ru": {
+          "png": "forecasts/spb/mcmc/total/3/20260624_120424/forecast_ru_png_3.png",
+          "pdf": "forecasts/spb/mcmc/total/3/20260624_120424/forecast_ru_pdf_3.png",
+          "small": "forecasts/spb/mcmc/total/3/20260624_120424/forecast_ru_small_3.png"
+        },
+        "en": {
+          "png": "forecasts/spb/mcmc/total/3/20260624_120424/forecast_en_png_3.png",
+          "pdf": "forecasts/spb/mcmc/total/3/20260624_120424/forecast_en_pdf_3.png",
+          "small": "forecasts/spb/mcmc/total/3/20260624_120424/forecast_en_small_3.png"
+        }
+      },
+      "urls_valid_for_seconds": 3600
+    }
+  }
+}

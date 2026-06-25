@@ -1,0 +1,49 @@
+{
+  "answer": "✅ Successfully generated parameter estimation for spb using mcmc method.\n☁️ Uploaded to S3: alpha and beta distribution plots\n🔗 URLs valid for 1 hour",
+  "metadata": {
+    "city": {
+      "slug": "spb",
+      "api_id": 38,
+      "name_ru": "Санкт-Петербург"
+    },
+    "request": {
+      "begin_year": 2025,
+      "begin_week": 40,
+      "end_year": 2026,
+      "end_week": 52
+    },
+    "source_url": "https://db.influenza.spb.ru/scripts/report/rmancgi.exe?reportname=get_csv&id=aripcr&byear=2025&bweek=40&eyear=2026&eweek=52&district=38&auth=%3Credacted%3E",
+    "configuration": {
+      "model_family": "baroyan_rvachev_model",
+      "forecast_type": "total",
+      "method": "mcmc",
+      "epsilon": 1000,
+      "forecast_duration_weeks": 4,
+      "calibration_window_weeks": null,
+      "posterior_samples": null
+    },
+    "s3": {
+      "urls": {
+        "alpha": {
+          "png": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260624_120848/alpha_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090848Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8a511a11c6b73f22fa5b260ae860777f94ec8f0898aab27dbbb560acd63c2b86",
+          "pdf": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260624_120848/alpha_pdf_3.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090848Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=25b61ee91c42033e954ae9cf3e3a84b1cd685b7055bf94b501e810a9262e12dd"
+        },
+        "beta": {
+          "png": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260624_120848/beta_png_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090848Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3bf7e84bd1e8211c4404c14981e191667720631e0c60daa9551a355c9b67f499",
+          "pdf": "http://localhost:9000/influenza-forecasts/params_estimation/spb/mcmc/total/3/20260624_120848/beta_pdf_3.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260624%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260624T090848Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=00301b0e8d393a7e3c7e774951bb036e4219ca8e65a7472c6ad87a2d4ab104b4"
+        }
+      },
+      "paths": {
+        "alpha": {
+          "png": "params_estimation/spb/mcmc/total/3/20260624_120848/alpha_png_3.png",
+          "pdf": "params_estimation/spb/mcmc/total/3/20260624_120848/alpha_pdf_3.pdf"
+        },
+        "beta": {
+          "png": "params_estimation/spb/mcmc/total/3/20260624_120848/beta_png_3.png",
+          "pdf": "params_estimation/spb/mcmc/total/3/20260624_120848/beta_pdf_3.pdf"
+        }
+      },
+      "urls_valid_for_seconds": 3600
+    }
+  }
+}
