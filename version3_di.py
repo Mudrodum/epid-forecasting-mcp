@@ -303,8 +303,8 @@ def compare_influenza_age_groups_from_db(
 
 @mcp.tool()
 def generate_br_model_forecast(
-    session_id: str = "3",
-    user_id: str = "1",
+    session_id: str ,
+    user_id: str,
     city: str = "spb",
     begin_year: int = 2025,
     begin_week: int = 40,
@@ -449,8 +449,8 @@ def generate_br_model_forecast(
     
 @mcp.tool()
 def estimate_br_model_parameters(
-    session_id: str = "3",
-    user_id: str = "1",
+    session_id: str,
+    user_id: str,
     city: str = "spb",
     begin_year: int = 2025,
     begin_week: int = 40,

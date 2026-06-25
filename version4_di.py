@@ -303,8 +303,8 @@ def compare_influenza_age_groups_from_db(
 
 @mcp.tool()
 def generate_br_model_forecast(
-    session_id: str = "3",
-    user_id: str = "1",
+    session_id: str,
+    user_id: str,
     city: str = "spb",
     begin_year: int = 2025,
     begin_week: int = 40,
@@ -449,8 +449,8 @@ def generate_br_model_forecast(
     
 @mcp.tool()
 def estimate_br_model_parameters(
-    session_id: str = "3",
-    user_id: str = "1",
+    session_id: str,
+    user_id: str,
     city: str = "spb",
     begin_year: int = 2025,
     begin_week: int = 40,
@@ -606,165 +606,6 @@ def estimate_br_model_parameters(
             metadata={"error": str(e)}
         )
 
-# @mcp.tool()
-# def generate_br_model_forecast(
-#     session_id: str,
-#     user_id: str,
-#     city: str = "spb",
-#     begin_year: int = 2025,
-#     begin_week: int = 40,
-#     end_year: int | None = None,
-#     end_week: int | None = None,
-#     forecast_type: str = "total",
-#     method: str = "mcmc",
-#     forecast_duration_weeks: int = 4,
-#     calibration_window_weeks: int | None = 26,
-#     posterior_samples: int = 200,
-#     abc_candidates: int = 3000,
-#     random_state: int = 42,
-# ) -> dict[str, Any]:
-#     """Calibrate a compact Baroyan-Rvachev-style model from NII DB data and export forecast figures.
-
-#     This is an auxiliary mechanistic analysis, separate from the GBDT plus
-#     conformal four-week forecast. ``forecast_type`` accepts ``total`` or
-#     ``age``; ``method`` accepts ``mcmc``, ``abc``, ``annealing``, or
-#     ``optuna`` (a compatibility alias for deterministic optimization).
-#     """
-
-#     request = _db_request(
-#         city=city,
-#         begin_year=begin_year,
-#         begin_week=begin_week,
-#         end_year=end_year,
-#         end_week=end_week,
-#     )
-#     bundle = fetch_influenza_db_bundle(request, _influenza_db_settings())
-#     config = BRCalibrationConfig(
-#         forecast_type=forecast_type,  # type: ignore[arg-type]
-#         method=method,  # type: ignore[arg-type]
-#         forecast_duration_weeks=forecast_duration_weeks,
-#         calibration_window_weeks=calibration_window_weeks,
-#         posterior_samples=posterior_samples,
-#         abc_candidates=abc_candidates,
-#         random_state=random_state,
-#     )
-#     result = run_br_calibration(bundle.cases, config=config)
-#     figures = {
-#         "forecast_ru": render_br_forecast_figure(result, language="ru"),
-#         "forecast_en": render_br_forecast_figure(result, language="en"),
-#     }
-#     artifact_metadata = _artifact_store().save_br_calibration_run(
-#         kind="forecast",
-#         trajectory=result.trajectory,
-#         parameter_samples=result.parameter_samples,
-#         parameter_summary=result.parameter_summary,
-#         diagnostics=result.diagnostics,
-#         configuration=result.configuration,
-#         limitations=result.limitations,
-#         figures=figures,
-#         user_id=user_id,
-#         session_id=session_id,
-#     )
-#     metadata = {
-#         "city": summarize_influenza_db_bundle(bundle)["city"],
-#         "request": summarize_influenza_db_bundle(bundle)["request"],
-#         "source_url": bundle.redacted_source_url,
-#         **result.to_public_dict(),
-#         "result_delivery": {
-#             "mode": "inline_summary_plus_s3_artifacts",
-#             "storage": "s3_compatible",
-#             "authentication": "server_side_s3_and_influenza_db_credentials",
-#             "client_download_access": "temporary_presigned_urls",
-#         },
-#         **artifact_metadata,
-#     }
-#     return _ok(
-#         answer=(
-#             "Calibrated a compact Baroyan-Rvachev-style mechanistic influenza model and "
-#             f"exported {forecast_duration_weeks}-week forecast figures for {metadata['city']['name_ru']}."
-#         ),
-#         metadata=metadata,
-#     )
-
-
-# @mcp.tool()
-# def estimate_br_model_parameters(
-#     session_id: str,
-#     user_id: str,
-#     city: str = "spb",
-#     begin_year: int = 2024,
-#     begin_week: int = 40,
-#     end_year: int | None = None,
-#     end_week: int | None = None,
-#     forecast_type: str = "total",
-#     method: str = "mcmc",
-#     calibration_window_weeks: int | None = 26,
-#     posterior_samples: int = 200,
-#     abc_candidates: int = 3000,
-#     random_state: int = 42,
-# ) -> dict[str, Any]:
-#     """Estimate BR-model alpha/beta parameters from NII DB data and export their distributions.
-
-#     The returned alpha/beta distributions are calibration parameters for the
-#     auxiliary mechanistic model. They are not direct biological measurements.
-#     """
-
-#     request = _db_request(
-#         city=city,
-#         begin_year=begin_year,
-#         begin_week=begin_week,
-#         end_year=end_year,
-#         end_week=end_week,
-#     )
-#     bundle = fetch_influenza_db_bundle(request, _influenza_db_settings())
-#     config = BRCalibrationConfig(
-#         forecast_type=forecast_type,  # type: ignore[arg-type]
-#         method=method,  # type: ignore[arg-type]
-#         forecast_duration_weeks=1,
-#         calibration_window_weeks=calibration_window_weeks,
-#         posterior_samples=posterior_samples,
-#         abc_candidates=abc_candidates,
-#         random_state=random_state,
-#     )
-#     result = run_br_calibration(bundle.cases, config=config)
-#     figures = render_br_parameter_figures(result)
-#     artifact_metadata = _artifact_store().save_br_calibration_run(
-#         kind="parameter_estimation",
-#         trajectory=result.trajectory,
-#         parameter_samples=result.parameter_samples,
-#         parameter_summary=result.parameter_summary,
-#         diagnostics=result.diagnostics,
-#         configuration=result.configuration,
-#         limitations=result.limitations,
-#         figures={
-#             "alpha_distribution": figures["alpha"],
-#             "beta_distribution": figures["beta"],
-#         },
-#         user_id=user_id,
-#         session_id=session_id,
-#     )
-#     metadata = {
-#         "city": summarize_influenza_db_bundle(bundle)["city"],
-#         "request": summarize_influenza_db_bundle(bundle)["request"],
-#         "source_url": bundle.redacted_source_url,
-#         **result.to_public_dict(),
-#         "result_delivery": {
-#             "mode": "inline_summary_plus_s3_artifacts",
-#             "storage": "s3_compatible",
-#             "authentication": "server_side_s3_and_influenza_db_credentials",
-#             "client_download_access": "temporary_presigned_urls",
-#         },
-#         **artifact_metadata,
-#     }
-#     return _ok(
-#         answer=(
-#             "Estimated alpha/beta distributions for the compact Baroyan-Rvachev-style "
-#             f"mechanistic model for {metadata['city']['name_ru']} and uploaded the figures to S3."
-#         ),
-#         metadata=metadata,
-#     )
-
-
 @mcp.tool()
 def compute_forecast_shap_explainability(
     session_id: str,
@@ -812,86 +653,6 @@ def compute_forecast_shap_explainability(
         answer="Computed SHAP forecast-driver explainability and uploaded SHAP artifacts to S3.",
         metadata=metadata,
     )
-
-
-def _br_parameter_meanings(forecast_type: str) -> dict[str, dict[str, str]]:
-    """Describe the fitted BR parameters without treating them as direct measurements."""
-    meanings: dict[str, dict[str, str]] = {
-        "alpha_total": {
-            "label": "Initial susceptible fraction",
-            "interpretation": (
-                "Estimated fraction of the aggregate population treated as susceptible at the start of the "
-                "calibration window. It is a model initialization parameter, not a directly observed immune-status measure."
-            ),
-        },
-        "beta_total": {
-            "label": "Aggregate transmission/contact coefficient",
-            "interpretation": (
-                "Fitted coefficient governing how infectious pressure is converted into new infections in the "
-                "aggregate renewal recurrence. It is not a directly measured contact rate or reproduction number."
-            ),
-        },
-    }
-    if forecast_type == "age":
-        meanings = {
-            "alpha_0_14": {
-                "label": "Initial susceptible fraction, 0-14 years",
-                "interpretation": "Fitted initial susceptible fraction for the 0-14 model group.",
-            },
-            "alpha_15_plus": {
-                "label": "Initial susceptible fraction, 15+ years",
-                "interpretation": "Fitted initial susceptible fraction for the 15+ model group.",
-            },
-            "beta_0_14_to_0_14": {
-                "label": "Within/cross-group coupling coefficient",
-                "interpretation": "Fitted age-structured transmission/contact coupling. The implementation label specifies its matrix position; it is not a directly observed contact rate.",
-            },
-            "beta_0_14_to_15_plus": {
-                "label": "Cross-group coupling coefficient",
-                "interpretation": "Fitted age-structured transmission/contact coupling. The implementation label specifies its matrix position; it is not a directly observed contact rate.",
-            },
-            "beta_15_plus_to_0_14": {
-                "label": "Cross-group coupling coefficient",
-                "interpretation": "Fitted age-structured transmission/contact coupling. The implementation label specifies its matrix position; it is not a directly observed contact rate.",
-            },
-            "beta_15_plus_to_15_plus": {
-                "label": "Within/cross-group coupling coefficient",
-                "interpretation": "Fitted age-structured transmission/contact coupling. The implementation label specifies its matrix position; it is not a directly observed contact rate.",
-            },
-        }
-    return meanings
-
-
-# def _br_bulletin_payload(result: Any) -> dict[str, Any]:
-#     """Convert a BR calibration result into compact inline bulletin evidence."""
-#     trajectory = result.trajectory.copy()
-#     trajectory["datetime"] = pd.to_datetime(trajectory["datetime"], errors="coerce")
-#     forecast = trajectory.loc[trajectory["is_forecast"].fillna(False)].copy()
-#     origin = trajectory.loc[~trajectory["is_forecast"].fillna(False), "datetime"].max()
-#     columns = [
-#         "datetime",
-#         "group",
-#         "fitted_cases",
-#         "pi80_lower_cases",
-#         "pi80_upper_cases",
-#         "fitted_inc_per_10k",
-#         "pi80_lower_inc_per_10k",
-#         "pi80_upper_inc_per_10k",
-#     ]
-#     available_columns = [column for column in columns if column in forecast.columns]
-#     forecast_rows = forecast.loc[:, available_columns].sort_values(["datetime", "group"]).to_dict(orient="records")
-#     configuration = dict(result.configuration)
-#     return {
-#         "configuration": configuration,
-#         "forecast_origin_date": None if pd.isna(origin) else origin.date().isoformat(),
-#         "forecast_horizon_weeks": int(configuration.get("forecast_duration_weeks", 0)),
-#         "forecast": forecast_rows,
-#         "parameter_summary": dict(result.parameter_summary),
-#         "parameter_meanings": _br_parameter_meanings(str(configuration.get("forecast_type", "total"))),
-#         "diagnostics": dict(result.diagnostics),
-#         "limitations": list(result.limitations),
-#     }
-
 
 @mcp.tool()
 def prepare_influenza_bulletin_context(
