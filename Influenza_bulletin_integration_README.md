@@ -180,6 +180,14 @@ di_prepare_influenza_bulletin_context_output.txt
 
 ---
 
+
+# Быстрый запуск (все команды вместе)
+bash
+uv venv && \
+uv sync --index-url https://pypi.org/simple && \
+uv pip install -r requirements.txt && \
+uv run python version4_di.py
+
 # Установка зависимостей
 
 Для корректной работы модуля `Influenza_bulletin` необходимо установить его зависимости.
