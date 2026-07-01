@@ -215,3 +215,68 @@ def test_s3_store_persists_br_artifacts_within_bulletin_context_prefix():
     assert f"{prefix}/br_summary.json" in uploaded_keys
     assert f"{prefix}/br_forecast_ru.png" in uploaded_keys
     assert metadata["artifacts"]["br_forecast_ru_pdf"]["s3_uri"] == f"s3://forecast-results/{prefix}/br_forecast_ru.pdf"
+
+
+def test_s3_store_loads_context_and_persists_final_rendered_bulletin():
+    import pandas as pd
+
+    class ReadBody(BytesIO):
+        pass
+
+    class ReadWriteFakeS3Client(FakeS3Client):
+        def __init__(self):
+            super().__init__()
+            self.objects = {}
+
+        def upload_fileobj(self, buffer, bucket, key, ExtraArgs=None):
+            super().upload_fileobj(buffer, bucket, key, ExtraArgs)
+            self.objects[key] = self.uploads[-1][2]
+
+        def get_object(self, Bucket, Key):
+            if Key not in self.objects:
+                raise KeyError(Key)
+            return {"Body": ReadBody(self.objects[Key])}
+
+    client = ReadWriteFakeS3Client()
+    store = S3ForecastArtifactStore(
+        S3StorageSettings("http://s3.test", "key", "secret", "forecast-results"), client=client
+    )
+    source_context = {
+        "schema_version": "epid_forecasting.bulletin_context.v3",
+        "forecast_model": {"engine": "gbdt"},
+    }
+    store.save_bulletin_context(
+        context=source_context,
+        markdown="# Source context\n",
+        weekly=pd.DataFrame({"datetime": ["2026-04-20"], "inc_per_10k": [1.2]}),
+        age_groups=pd.DataFrame({"datetime": ["2026-04-20"], "age_group": ["7-14"], "inc_per_10k": [4.5]}),
+        user_id="mark",
+        session_id="session-01",
+        run_id="context-run-01",
+    )
+
+    loaded = store.load_bulletin_context_run(
+        user_id="mark", session_id="session-01", run_id="context-run-01"
+    )
+    assert loaded["context"]["forecast_model"]["engine"] == "gbdt"
+    assert loaded["weekly"].iloc[0]["inc_per_10k"] == 1.2
+
+    metadata = store.save_rendered_bulletin(
+        source_context_run_id="context-run-01",
+        source_context_schema_version="epid_forecasting.bulletin_context.v3",
+        bulletin_markdown="# Итог\n",
+        bulletin_html="<h1>Итог</h1>",
+        bulletin_pdf=b"%PDF-test",
+        figures={"forecast_figure": b"png"},
+        render_manifest={"schema_version": "epid_forecasting.rendered_bulletin.v1"},
+        user_id="mark",
+        session_id="session-01",
+        run_id="render-run-01",
+    )
+    prefix = "mark/session-01/epid_forecasting/rendered_bulletin/render-run-01"
+    assert metadata["storage_prefix"] == prefix
+    uploaded = [item[1] for item in client.uploads]
+    assert f"{prefix}/bulletin.pdf" in uploaded
+    assert f"{prefix}/forecast_figure.png" in uploaded
+    manifest = json.loads(client.objects[f"{prefix}/render_manifest.json"].decode("utf-8"))
+    assert manifest["source_context"]["run_id"] == "context-run-01"

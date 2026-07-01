@@ -58,6 +58,7 @@ def test_mcp_surface_contains_expected_agent_facing_tools():
         "estimate_br_model_parameters",
         "compute_forecast_shap_explainability",
         "prepare_influenza_bulletin_context",
+        "render_influenza_bulletin",
         "run_influenza_forecasting",
         "compare_epidemic_waves",
     ]
@@ -93,6 +94,13 @@ def test_mcp_surface_contains_expected_agent_facing_tools():
         "br_forecast_type", "br_method", "br_forecast_duration_weeks",
     }.issubset(set(context_tool.parameters["properties"]))
     assert set(context_tool.parameters["required"]) == {"session_id", "user_id"}
+    render_tool = next(tool for tool in tools if tool.name == "render_influenza_bulletin")
+    assert {"session_id", "user_id", "bulletin_context_run_id", "bulletin_markdown", "title"}.issubset(
+        set(render_tool.parameters["properties"])
+    )
+    assert set(render_tool.parameters["required"]) == {
+        "session_id", "user_id", "bulletin_context_run_id", "bulletin_markdown"
+    }
 
 
 def test_main_tool_returns_inline_result_and_presigned_artifact_contract(monkeypatch):
@@ -265,3 +273,63 @@ def test_bulletin_context_br_engine_replaces_shap_with_mechanistic_evidence(monk
     assert context["mechanistic_model_interpretation"]["parameter_summary"]["best_fit"]["beta_total"] == 0.2
     assert context["mechanistic_model_interpretation"]["gamma"]["status"] == "not_estimated"
     assert context["short_term_forecast"]["forecast_engine"] == "br"
+
+
+def test_render_bulletin_tool_delegates_to_renderer_alias(monkeypatch):
+    source = {
+        "context": {"schema_version": "epid_forecasting.bulletin_context.v3"},
+        "weekly": pd.DataFrame({"datetime": ["2026-06-22"], "inc_per_10k": [0.0]}),
+        "age_groups": pd.DataFrame(),
+        "merged_weekly": None,
+        "shap_global_importance": None,
+        "br_trajectory": None,
+        "br_figures": None,
+        "storage_prefix": "mark/session-01/epid_forecasting/bulletin_context/context-run-01",
+    }
+
+    class RenderStore:
+        def load_bulletin_context_run(self, *, user_id, session_id, run_id):
+            assert user_id == "mark"
+            assert session_id == "session-01"
+            assert run_id == "context-run-01"
+            return source
+
+        def save_rendered_bulletin(self, **kwargs):
+            assert kwargs["source_context_run_id"] == "context-run-01"
+            assert kwargs["bulletin_markdown"] == "# Bulletin"
+            assert kwargs["bulletin_html"] == "<html></html>"
+            assert kwargs["bulletin_pdf"].startswith(b"%PDF")
+            return {
+                "run_id": "render-run-01",
+                "storage_prefix": "mark/session-01/epid_forecasting/rendered_bulletin/render-run-01",
+                "artifacts": {"bulletin_pdf": {"download_url": "https://example.test/bulletin.pdf"}},
+            }
+
+    rendered = SimpleNamespace(
+        markdown="# Bulletin",
+        html="<html></html>",
+        pdf=b"%PDF-test",
+        figures={},
+        manifest={"schema_version": "epid_forecasting.rendered_bulletin.v1"},
+    )
+
+    def fake_renderer(**kwargs):
+        assert kwargs["context"] is source["context"]
+        assert kwargs["writer_markdown"] == "# Authored text"
+        assert kwargs["weekly"] is source["weekly"]
+        assert kwargs["age_groups"] is source["age_groups"]
+        return rendered
+
+    monkeypatch.setattr(server, "_artifact_store", lambda: RenderStore())
+    monkeypatch.setattr(server, "render_bulletin_artifacts", fake_renderer)
+
+    response = server.render_influenza_bulletin(
+        session_id="session-01",
+        user_id="mark",
+        bulletin_context_run_id="context-run-01",
+        bulletin_markdown="# Authored text",
+    )
+
+    assert response["metadata"]["source_bulletin_context"]["run_id"] == "context-run-01"
+    assert response["metadata"]["run_id"] == "render-run-01"
+    assert response["metadata"]["artifacts"]["bulletin_pdf"]["download_url"].endswith("bulletin.pdf")

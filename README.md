@@ -6,7 +6,7 @@ A compact FastMCP server for weekly influenza forecasting in Saint Petersburg. T
 
 This implementation follows the existing CoScientist MCP-server conventions:
 
-- the public MCP surface includes forecasting tools, NII influenza DB access, Open-Meteo weather-source export, age-group comparison, epidemic-wave comparison, SHAP explainability, and bulletin-context preparation tools;
+- the public MCP surface includes forecasting tools, NII influenza DB access, Open-Meteo weather-source export, age-group comparison, epidemic-wave comparison, SHAP explainability, bulletin-context preparation, and deterministic final-bulletin rendering tools;
 - computational artifacts are written to S3-compatible storage under a `user_id/session_id/...` prefix;
 - the MCP response includes the compact numerical result inline for immediate agent use;
 - downloadable result files are exposed through temporary presigned URLs generated server-side, so the client never receives permanent S3 credentials.
@@ -133,6 +133,43 @@ br_beta_distribution.pdf
 
 The returned metadata includes the complete compact `bulletin_context` inline, so an MCP client can immediately write a bulletin from the computed evidence. No separate prompt is returned. The full JSON/Markdown packet and tabular artifacts remain in S3 for audit and reuse. External prose must use only the inline context and referenced artifacts; the packet contains its own `writing_constraints` and `limitations`.
 
+### `render_influenza_bulletin(session_id, user_id, bulletin_context_run_id, bulletin_markdown, title=None, append_missing_evidence=True)`
+
+Renders the final written bulletin as Markdown, HTML, and PDF from a **previously created** `prepare_influenza_bulletin_context` run. This tool is the deterministic presentation layer: it does not call an LLM, repeat the forecast, query the NII influenza DB, fetch weather, or recalculate SHAP/BR parameters.
+
+The renderer numbers figures in the actual placeholder order, translates generated SHAP table labels into Russian, and formats generated table decimals with commas. It also checks forecast recency: when the forecast origin is more than 14 days older than the latest observed week, the PDF/HTML contains a prominent warning and labels the forecast as archival rather than operational.
+
+Workflow:
+
+```text
+prepare_influenza_bulletin_context
+→ external author writes bulletin_markdown from the returned evidence
+→ render_influenza_bulletin
+→ bulletin.md + bulletin.html + bulletin.pdf in S3-compatible storage
+```
+
+`bulletin_context_run_id` must be the `run_id` returned by the preparation tool for the same `user_id` and `session_id`. `bulletin_markdown` is authored prose. To insert figures and tables at exact locations, place one of these tokens on its own line:
+
+```text
+{{FORECAST_FIGURE}}
+{{FORECAST_TABLE}}
+{{WAVES_FIGURE}}
+{{AGE_GROUPS_FIGURE}}
+{{AGE_GROUPS_TABLE}}
+{{SHAP_FIGURE}}
+{{SHAP_TABLE}}
+{{MECHANISTIC_PARAMETERS}}
+```
+
+If a token is absent, the corresponding available evidence is appended to `Приложение. Расчетные материалы` when `append_missing_evidence=True`. In GBDT mode this includes the forecast, wave, age-group, and SHAP figures; in BR mode it includes the BR forecast/parameter figures and alpha/beta/gamma-status table. The final S3 artifacts are saved under:
+
+```text
+user_id/session_id/epid_forecasting/rendered_bulletin/<render_id>/bulletin.md
+user_id/session_id/epid_forecasting/rendered_bulletin/<render_id>/bulletin.html
+user_id/session_id/epid_forecasting/rendered_bulletin/<render_id>/bulletin.pdf
+user_id/session_id/epid_forecasting/rendered_bulletin/<render_id>/render_manifest.json
+```
+
 ### `run_influenza_forecasting(session_id, user_id, origin_date=None)`
 
 Runs the complete fixed four-week workflow:
@@ -200,6 +237,7 @@ mcp-servers/epid-forecasting-mcp-server/
 ├── epid_forecasting/
 │   ├── __init__.py
 │   ├── bulletin_context.py
+│   ├── bulletin_renderer.py
 │   ├── config.py
 │   ├── features.py
 │   ├── influenza_db.py

@@ -18,6 +18,10 @@ from epid_forecasting.br_calibration import (
     run_br_calibration,
 )
 from epid_forecasting.bulletin_context import build_bulletin_context, render_bulletin_context_markdown
+from epid_forecasting.bulletin_renderer import (
+    PLACEHOLDERS,
+    render_influenza_bulletin as render_bulletin_artifacts,
+)
 from epid_forecasting.config import DEFAULT_DATA_PATH
 from epid_forecasting.explainability import compute_forecast_shap_explainability as compute_shap_for_state
 from epid_forecasting.influenza_db import (
@@ -254,12 +258,21 @@ def generate_br_model_forecast(
     abc_candidates: int = 3000,
     random_state: int = 42,
 ) -> dict[str, Any]:
-    """Calibrate a compact Baroyan-Rvachev-style model from NII DB data and export forecast figures.
+    """EXPLICIT-REQUEST-ONLY MECHANISTIC BR FORECAST TOOL.
 
-    This is an auxiliary mechanistic analysis, separate from the GBDT plus
-    conformal four-week forecast. ``forecast_type`` accepts ``total`` or
-    ``age``; ``method`` accepts ``mcmc``, ``abc``, ``annealing``, or
-    ``optuna`` (a compatibility alias for deterministic optimization).
+        Use this tool only when the user explicitly requests at least one of:
+        - BR / Baroyan-Rvachev model;
+        - mechanistic model;
+        - differential equations / "диффуры";
+        - alpha/beta parameter-based forecast;
+        - a comparison between GBDT and a mechanistic model.
+
+        Do NOT use this tool for a general influenza forecast, a forecast for the next
+        1–4 weeks, uncertainty intervals, gradient boosting, GBDT, or test-set
+        forecast accuracy. For those requests, use run_influenza_forecasting only.
+
+        Do NOT call this tool together with run_influenza_forecasting unless the user
+        explicitly asks to compare the two model families.
     """
 
     request = _db_request(
@@ -762,8 +775,105 @@ def prepare_influenza_bulletin_context(
 
 
 @mcp.tool()
+def render_influenza_bulletin(
+    session_id: str,
+    user_id: str,
+    bulletin_context_run_id: str,
+    bulletin_markdown: str,
+    title: str | None = None,
+    append_missing_evidence: bool = True,
+) -> dict[str, Any]:
+    """FINAL SERVER-SIDE BULLETIN RENDERER.
+
+    Use this tool as the required final step when the user requests a complete,
+    ready-to-distribute influenza bulletin in PDF, HTML or Markdown.
+
+    Workflow:
+    1. Call prepare_influenza_bulletin_context.
+    2. Draft the bulletin narrative from the returned evidence packet.
+    3. Call this tool with the context run_id and the authored bulletin Markdown.
+
+    This tool produces the official final Markdown, HTML and PDF artifacts in S3.
+
+    Do NOT create a local HTML file, do NOT use browser Print to PDF, and do NOT
+    return a locally rendered PDF when this tool is available. Do not recompute
+    forecasts, SHAP, BR calibration, weather or database data here.
+
+    ``bulletin_context_run_id`` must be the run_id returned by the preparation tool
+    for the same user/session. ``bulletin_markdown`` is authored prose. Optional
+    standalone placement lines are: {{FORECAST_FIGURE}}, {{FORECAST_TABLE}},
+    {{WAVES_FIGURE}}, {{AGE_GROUPS_FIGURE}}, {{AGE_GROUPS_TABLE}}, {{SHAP_FIGURE}}, {{SHAP_TABLE}},
+    and {{MECHANISTIC_PARAMETERS}}. When omitted, available evidence is appended as
+    a deterministic appendix.
+    """
+    store = _artifact_store()
+    source = store.load_bulletin_context_run(
+        user_id=user_id,
+        session_id=session_id,
+        run_id=bulletin_context_run_id,
+    )
+    output = render_bulletin_artifacts(
+        context=source["context"],
+        writer_markdown=bulletin_markdown,
+        weekly=source["weekly"],
+        age_groups=source["age_groups"],
+        merged_weekly=source.get("merged_weekly"),
+        shap_global_importance=source.get("shap_global_importance"),
+        br_trajectory=source.get("br_trajectory"),
+        existing_br_figures=source.get("br_figures"),
+        title=title,
+        append_missing_evidence=append_missing_evidence,
+    )
+    artifact_metadata = store.save_rendered_bulletin(
+        source_context_run_id=bulletin_context_run_id,
+        source_context_schema_version=source["context"].get("schema_version"),
+        bulletin_markdown=output.markdown,
+        bulletin_html=output.html,
+        bulletin_pdf=output.pdf,
+        figures=output.figures,
+        render_manifest=output.manifest,
+        user_id=user_id,
+        session_id=session_id,
+    )
+    metadata = {
+        "source_bulletin_context": {
+            "run_id": bulletin_context_run_id,
+            "storage_prefix": source["storage_prefix"],
+            "schema_version": source["context"].get("schema_version"),
+        },
+        "rendering": output.manifest,
+        "placeholder_contract": dict(PLACEHOLDERS),
+        "result_delivery": {
+            "mode": "inline_summary_plus_s3_artifacts",
+            "storage": "s3_compatible",
+            "authentication": "server_side_s3_credentials",
+            "client_download_access": "temporary_presigned_urls",
+        },
+        **artifact_metadata,
+    }
+    return _ok(
+        answer=(
+            "Rendered the authored influenza bulletin from the saved evidence packet as Markdown, HTML and PDF; "
+            "final artifacts were uploaded to S3-compatible storage."
+        ),
+        metadata=metadata,
+    )
+
+
+@mcp.tool()
 def run_influenza_forecasting(session_id: str, user_id: str, origin_date: str | None = None) -> dict[str, Any]:
-    """Run the fixed four-week influenza forecasting workflow and persist result artifacts."""
+    """DEFAULT GBDT FORECAST TOOL.
+
+        Use this tool alone for a standard influenza forecast:
+        - forecast for the next 1–4 weeks;
+        - gradient boosting / GBDT forecast;
+        - point predictions and split-conformal uncertainty intervals;
+        - test-set forecast accuracy metrics such as MAE, RMSE, R² and interval coverage.
+
+        Do NOT call a BR, Baroyan-Rvachev, mechanistic, differential-equation, or
+        alpha/beta tool in addition unless the user explicitly requests such a model
+        or explicitly asks to compare GBDT with a mechanistic model.
+    """
     analytics = service.run_influenza_forecasting(origin_date=origin_date)
     artifact_metadata = _artifact_store().save_forecasting_run(result=analytics, user_id=user_id, session_id=session_id)
     metadata = {

@@ -13,6 +13,7 @@ from typing import Any
 import boto3
 import pandas as pd
 from botocore.client import Config
+from botocore.exceptions import ClientError
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 
@@ -104,6 +105,30 @@ class S3ForecastArtifactStore:
             key,
             ExtraArgs={"ContentType": content_type},
         )
+
+    def _get_bytes(self, key: str) -> bytes:
+        """Read one S3 object through server-side credentials."""
+        response = self.client.get_object(Bucket=self.settings.bucket_name, Key=key)
+        body = response["Body"]
+        try:
+            return body.read()
+        finally:
+            close = getattr(body, "close", None)
+            if callable(close):
+                close()
+
+    def _get_optional_bytes(self, key: str) -> bytes | None:
+        """Return ``None`` only for a missing optional object; re-raise other storage failures."""
+        try:
+            return self._get_bytes(key)
+        except ClientError as exc:
+            code = str(exc.response.get("Error", {}).get("Code", ""))
+            if code in {"404", "NoSuchKey", "NotFound"}:
+                return None
+            raise
+        except KeyError:
+            # Supports the in-memory storage fake used by tests.
+            return None
 
     def _presigned_url(self, key: str) -> str:
         return self.client.generate_presigned_url(
@@ -539,4 +564,110 @@ class S3ForecastArtifactStore:
                 for name, artifact in artifacts.items()
             },
         }
+    def load_bulletin_context_run(
+        self,
+        *,
+        user_id: str,
+        session_id: str,
+        run_id: str,
+    ) -> dict[str, Any]:
+        """Load a previously persisted bulletin evidence packet from the caller's scoped prefix.
+
+        This method performs no epidemiological calculation. It only retrieves the
+        source packet required by ``render_influenza_bulletin`` and keeps all reads
+        scoped to the supplied user/session/run identifiers.
+        """
+        user_id = self._validate_identifier(user_id, "user_id")
+        session_id = self._validate_identifier(session_id, "session_id")
+        run_id = self._validate_identifier(run_id, "run_id")
+        prefix = f"{user_id}/{session_id}/epid_forecasting/bulletin_context/{run_id}"
+
+        context = json.loads(self._get_bytes(f"{prefix}/bulletin_context.json").decode("utf-8"))
+        source_markdown = self._get_bytes(f"{prefix}/bulletin_context.md").decode("utf-8")
+
+        def read_csv(name: str, *, required: bool) -> pd.DataFrame | None:
+            payload = self._get_bytes(f"{prefix}/{name}") if required else self._get_optional_bytes(f"{prefix}/{name}")
+            if payload is None:
+                return None
+            return pd.read_csv(BytesIO(payload))
+
+        optional_figures: dict[str, bytes] = {}
+        for name in ("br_forecast_ru.png", "br_alpha_distribution.png", "br_beta_distribution.png"):
+            payload = self._get_optional_bytes(f"{prefix}/{name}")
+            if payload is not None:
+                optional_figures[name.removesuffix(".png")] = payload
+
+        return {
+            "run_id": run_id,
+            "storage_prefix": prefix,
+            "context": context,
+            "source_markdown": source_markdown,
+            "weekly": read_csv("weekly.csv", required=True),
+            "age_groups": read_csv("age_groups.csv", required=True),
+            "merged_weekly": read_csv("merged_weekly.csv", required=False),
+            "shap_global_importance": read_csv("shap_global_importance.csv", required=False),
+            "br_trajectory": read_csv("br_trajectory.csv", required=False),
+            "br_figures": optional_figures,
+        }
+
+    def save_rendered_bulletin(
+        self,
+        *,
+        source_context_run_id: str,
+        source_context_schema_version: str | None,
+        bulletin_markdown: str,
+        bulletin_html: str,
+        bulletin_pdf: bytes,
+        figures: dict[str, bytes],
+        render_manifest: dict[str, Any],
+        user_id: str,
+        session_id: str,
+        run_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Persist final bulletin artifacts under a new session-scoped rendered-bulletin prefix."""
+        user_id = self._validate_identifier(user_id, "user_id")
+        session_id = self._validate_identifier(session_id, "session_id")
+        source_context_run_id = self._validate_identifier(source_context_run_id, "source_context_run_id")
+        run_id = run_id or str(uuid.uuid4())
+        self._validate_identifier(run_id, "run_id")
+        prefix = f"{user_id}/{session_id}/epid_forecasting/rendered_bulletin/{run_id}"
+        manifest = {
+            **render_manifest,
+            "source_context": {
+                "run_id": source_context_run_id,
+                "storage_prefix": f"{user_id}/{session_id}/epid_forecasting/bulletin_context/{source_context_run_id}",
+                "schema_version": source_context_schema_version,
+            },
+        }
+        artifacts: dict[str, dict[str, Any]] = {
+            "bulletin_markdown": {
+                "key": f"{prefix}/bulletin.md",
+                "bytes": bulletin_markdown.encode("utf-8"),
+                "content_type": "text/markdown",
+            },
+            "bulletin_html": {
+                "key": f"{prefix}/bulletin.html",
+                "bytes": bulletin_html.encode("utf-8"),
+                "content_type": "text/html",
+            },
+            "bulletin_pdf": {
+                "key": f"{prefix}/bulletin.pdf",
+                "bytes": bulletin_pdf,
+                "content_type": "application/pdf",
+            },
+            "render_manifest": {
+                "key": f"{prefix}/render_manifest.json",
+                "bytes": json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"),
+                "content_type": "application/json",
+            },
+        }
+        for name, payload in figures.items():
+            safe_name = self._validate_identifier(name, "figure_name")
+            artifacts[f"{safe_name}_png"] = {
+                "key": f"{prefix}/{safe_name}.png",
+                "bytes": payload,
+                "content_type": "image/png",
+            }
+        metadata = self._upload_artifacts(prefix, artifacts)
+        return {"run_id": run_id, **metadata}
 
